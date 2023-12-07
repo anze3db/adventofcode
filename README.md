@@ -67,9 +67,9 @@ aoc.print_p1() # prints the first part of the puzzle
 inp = aoc.get_input() # returns the input as a string
 # solve the puzzle here
 ...
-aoc.submit_p1('part 1: answer') # submits the answer to the first part of the puzzle
+aoc.submit_p1('part 1 answer') # submits the answer to the first part of the puzzle
 aoc.print_p2() # prints the second part of the puzzle
 # solve the puzzle here
 ...
-aoc.submit_p2('part 2: answer') # submits the answer to the second part of the puzzle
+aoc.submit_p2('part 2 answer') # submits the answer to the second part of the puzzle
 ```

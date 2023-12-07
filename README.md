@@ -43,7 +43,7 @@ def part2(inp):
 
 
 # Call your function with sample p1 input:
-assert part1("""""".splitlines()) == None 
+assert part1("""""".splitlines()) == None
 # Call your function with the real p1 input and submit the result:
 aoc.submit_p1(part1(aoc.get_input()))
 

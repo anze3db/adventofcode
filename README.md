@@ -13,7 +13,7 @@ pip install adventofcode
 
 ### Set your session cookie
 
-Add the [adventofcode.com] `session` cookie value to your env:
+Add the [adventofcode.com](https://adventofcode.com) session cookie value to your env:
 
 ```bash
 export AOC_SESSION="..."
@@ -21,7 +21,8 @@ export AOC_SESSION="..."
 
 Alternatively, you can save your `AOC_SESSION=""` value in a `.env` file.
 
-This will allow you to get your personal puzzle output (`aoc.get_input()`) and submit your answers with `aoc.submit_p1()` and `aoc.submit_p2()`.
+> [!NOTE]
+> Setting AOC_SESSION will allow you to get your personal puzzle output (`aoc.get_input()`) and submit your answers with `aoc.submit_p1()` and `aoc.submit_p2()`.
 
 ### Use a template to solve puzzles
 
@@ -53,7 +54,7 @@ aoc.submit_p2(part2(aoc.get_input()))
 ```
 
 > [!NOTE]
-> All submissions and fetched results are cached locally in the `.cache` folder so that we don't spam the AoC servers and resubmit the same answer multiple times.
+> All submissions and fetched results are cached locally in the `.cache.db` file so that we don't spam the AoC servers or resubmit the same answer multiple times.
 
 ### Or build your workflow using the AoC class
 

@@ -1,6 +1,11 @@
 # adventofcode
 
-Helper utilities for solving Advent of Code puzzles
+Helper utilities for solving Advent of Code puzzles.
+
+* No copy-pasting puzzle inputs into files.
+* No need to use low-level file APIs to read your inputs.
+* Performance reports for example inputs and puzzle inputs.
+* Submit the answer immediately when your code returns the result 🏎️
 
 ## Usage
 
@@ -19,7 +24,7 @@ Add the [adventofcode.com](https://adventofcode.com) session cookie value to you
 export AOC_SESSION="..."
 ```
 
-Alternatively, you can save your `AOC_SESSION=""` value in a `.env` file.
+Alternatively, you can save your `AOC_SESSION="******"` value in a `.env` file.
 
 > [!NOTE]
 > Setting AOC_SESSION will allow you to get your personal puzzle output (`aoc.get_input()`) and submit your answers with `aoc.submit_p1()` and `aoc.submit_p2()`.
@@ -31,8 +36,6 @@ I use the following template to start solving puzzles, see my examples in [my re
 ```python
 from adventofcode import AoC
 
-aoc = AoC()
-
 
 def part1(inp):
     return None
@@ -42,15 +45,17 @@ def part2(inp):
     return None
 
 
-# Call your function with sample p1 input:
-assert part1("""""".splitlines()) == None
-# Call your function with the real p1 input and submit the result:
-aoc.submit_p1(part1(aoc.get_input()))
+aoc = AoC(part_1=part1, part_2=part2)
+inp = """sample input"""
+# Run your part1 function with sample input and assert the expected result:
+aoc.assert_p1(inp, 42)
+# Run your part1 function on puzzle input and submit the answer returned:
+aoc.submit_p1()
 
-# Call your function with sample p1 input:
-assert part2("""""".splitlines()) == None
-# Call your function with the real p2 input and submit the result:
-aoc.submit_p2(part2(aoc.get_input()))
+# Run your part2 function with sample input and assert the expected result:
+aoc.assert_p2(inp, 6*7)
+# Run your part2 function on puzzle input and submit the answer returned:
+aoc.submit_p2()
 ```
 
 > [!NOTE]

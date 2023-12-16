@@ -9,9 +9,9 @@ and this project adheres to [Calendar Versioning](https://calver.org).
 
 ### Added
 
- * `assert_p1` and `assert_p2` methods to `AoC` class, used for easily asserting your solutions against sample inputs.
- * `part_1`, `part_2` are now optional arguments to `AoC` class, so you can use `assert_p1` and `assert_p2` without defining your own functions as well as call `submit_p1` and `submit_p2` without calling `get_input()` manucall.
- * `part_1_no_splitlines` and `part_2_no_splitlines` are now optional arguments to `AoC` class, used inplace of `part_1` and `part_2` when the rare cases where the input should not be split into lines.
+ * `assert_p1` and `assert_p2` methods to `AoC` class. Used for easily asserting your solutions against sample inputs.
+ * `part_1`, `part_2` optional arguments to the `AoC` class. Used to pass in a Callable that will return the correct result for the given input. The callable will be called by `assert_p1`, `assert_p2`, `submit_p1` and `submit_p2` methods.
+ * `part_1_no_splitlines` and `part_2_no_splitlines` optional arguments to `AoC` class. Used as an alternative to `part_1` and `part_2` for the rare cases when the input should not be split into lines.
 
 
 ## [2023.0b0] - 2023-12-07

@@ -22,7 +22,10 @@ AOC_URL = "https://adventofcode.com"
 
 AOC_SESSION = os.getenv("AOC_SESSION")
 
-AOC_NOT_SET_MSG = "Set AOC_SESSION to your `session` cookie on adventofcode.com. You can add it to your .env file or export it in your shell (export AOC_SESSION='your session cookie')"
+AOC_NOT_SET_MSG = (
+    "Set AOC_SESSION to your `session` cookie on adventofcode.com. You can add it to your .env file or "
+    "export it in your shell (export AOC_SESSION='your session cookie')"
+)
 
 
 @contextmanager

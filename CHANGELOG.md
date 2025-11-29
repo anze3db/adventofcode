@@ -7,18 +7,15 @@ and this project adheres to [Calendar Versioning](https://calver.org).
 
 ## [25.0]
 
-
 ### Added
 
  * Command line tool for scaffolding all the days (`adventofcode init`)
  * Support for Python 3.13 and 3.14
 
-### Dropped
- * `part_1_no_splitlines` and `part_2_no_splitlines` parameters. `part_1` and `part_2` now receive a str instead of `list[str]`.
- * Support for Python 3.8 and 3.9
+### Removed
 
-### Fixed
- * Typos in README
+ * `part_1_no_splitlines` and `part_2_no_splitlines` parameters. `part_1` and `part_2` now receive a `str` instead of `list[str]`. This was done to simplify the API.
+ * Support for Python 3.8 and 3.9
 
 ## [23.0b1]
 

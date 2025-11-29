@@ -36,8 +36,8 @@ def print_perf(typ=""):
 class AoC:
     def __init__(
         self,
-        part_1: Callable[[str], str | int],
-        part_2: Callable[[str], str | int],
+        part_1: Callable[[str], str | int | None],
+        part_2: Callable[[str], str | int | None],
         *,
         day: int | None = None,
         year: int | None = None,

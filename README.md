@@ -2,10 +2,11 @@
 
 Helper utilities for solving Advent of Code puzzles.
 
+* Project scaffolding with `adventofcode init`
 * No copy-pasting puzzle inputs into files.
 * No need to use low-level file APIs to read your inputs.
 * Performance reports for example inputs and puzzle inputs.
-* Submit the answer immediately when your code returns the result 🏎️
+* Submit the answer immediately when your code returns the result 🏅
 
 ## Usage
 

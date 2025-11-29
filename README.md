@@ -9,7 +9,7 @@ Helper utilities for solving Advent of Code puzzles.
 
 ## Usage
 
-### Setup 
+### Setup
 
 ```bash
 uv init

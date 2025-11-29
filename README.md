@@ -42,7 +42,7 @@ This will generate the scripts for each day:
 1 directory, 16 files
 ```
 
-All the xx.py files look like this:
+All the py files look like this:
 
 ```python
 from adventofcode import AoC

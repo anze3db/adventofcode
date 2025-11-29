@@ -22,6 +22,7 @@ AOC_URL = "https://adventofcode.com"
 
 
 AOC_SESSION = os.getenv("AOC_SESSION")
+AOC_YEAR = int(os.getenv("AOC_YEAR", str(datetime.datetime.now(tz=datetime.timezone.utc).year)))
 
 AOC_NOT_SET_MSG = (
     "Set AOC_SESSION to your `session` cookie on adventofcode.com. You can add it to your .env file or "
@@ -51,7 +52,7 @@ class AoC:
             current_filename_numbers = re.sub(r"[^0-9.]", "", current_filename)
             day = int(current_filename_numbers)
         if year is None:
-            year = datetime.datetime.now(tz=datetime.timezone.utc).year
+            year = AOC_YEAR
 
         console.log(f"Solving {day=} {year=}")
         self.day = day

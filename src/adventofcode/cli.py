@@ -3,45 +3,49 @@ import datetime
 from pathlib import Path
 from textwrap import dedent
 
-TEMPLATE = '''from adventofcode import AoC
+from rich.console import Console
+
+console = Console()
+TEMPLATE = dedent('''\
+    from adventofcode import AoC
 
 
-def part1(inp: str) -> str | int | None:
-    return None
+    def part1(inp: str) -> str | int | None:
+        return None
 
 
-def part2(inp: str) -> str | int | None:
-    return None
+    def part2(inp: str) -> str | int | None:
+        return None
 
 
-aoc = AoC(part_1=part1, part_2=part2)
-inp = """sample input"""
-expected_result = None
-aoc.assert_p1(inp, expected_result)
-aoc.submit_p1()
+    aoc = AoC(part_1=part1, part_2=part2)
+    inp = """sample input"""
+    expected_result = None
+    aoc.assert_p1(inp, expected_result)
+    aoc.submit_p1()
 
-expected_result = None
-aoc.assert_p2(inp, expected_result)
-aoc.submit_p2()
-'''
+    expected_result = None
+    aoc.assert_p2(inp, expected_result)
+    aoc.submit_p2()
+    ''')
 
 
 def generate_templates(year: int, output_dir: Path, num_days: int) -> None:
     """Generate template files for the specified year."""
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    print(f"Generating templates for Advent of Code {year}")  # noqa: T201
+    console.log(f"Generating templates for Advent of Code {year}")
 
     for day in range(1, num_days + 1):
         filename = f"{day:02d}.py"
         filepath = output_dir / filename
 
         if filepath.exists():
-            print(f"Skipping {filename} (already exists)")  # noqa: T201
+            console.log(f"Skipping {filename} (already exists)")
             continue
 
         filepath.write_text(TEMPLATE)
-        print(f"Created {filename}")  # noqa: T201
+        console.log(f"Created {filename}")
 
     gitignore_path = output_dir / ".gitignore"
     if gitignore_path.exists():
@@ -51,13 +55,13 @@ def generate_templates(year: int, output_dir: Path, num_days: int) -> None:
                 if not gitignore_content.endswith("\n"):
                     f.write("\n")
                 f.write(".cache\n")
-            print("Added .cache to .gitignore")  # noqa: T201
+            console.log("Added .cache to .gitignore")
         if ".env" not in gitignore_content:
             with gitignore_path.open("a") as f:
                 if not gitignore_content.endswith("\n"):
                     f.write("\n")
                 f.write(".env\n")
-            print("Added .env to .gitignore")  # noqa: T201
+            console.log("Added .env to .gitignore")
 
     env_path = output_dir / ".env"
     if not env_path.exists():
@@ -68,7 +72,7 @@ def generate_templates(year: int, output_dir: Path, num_days: int) -> None:
             'AOC_SESSION=""\n'
             f"AOC_YEAR={year}\n"
         )
-        print("Created .env file (remember to set your AOC_SESSION)")  # noqa: T201
+        console.log("Created .env file (remember to set your AOC_SESSION)")
 
 
 def main() -> None:

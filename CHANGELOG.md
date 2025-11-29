@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Calendar Versioning](https://calver.org).
 
+## [25.0]
+
+### Fixed
+
+ * Typos in README
+
+### Added
+
+ * Support for Python 3.13 and 3.14
+
+### Dropped
+ 
+ * Support for Python 3.8 and 3.9
+
 ## [23.0b1]
 
 ### Added

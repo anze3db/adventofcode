@@ -39,6 +39,10 @@ Source = "https://github.com/anze3db/adventofcode"
 Mastodon = "https://fosstodon.org/@anze3db"
 Twitter = "https://twitter.com/anze3db"
 
+[project.scripts]
+adventofcode = "adventofcode.cli:main"
+aoc = "adventofcode.cli:main"
+
 [tool.hatch.version]
 path = "src/adventofcode/__about__.py"
 

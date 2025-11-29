@@ -31,7 +31,7 @@ Alternatively, you can save your `AOC_SESSION="******"` value in a `.env` file.
 
 ### Use a template to solve puzzles
 
-I use the following template to start solving puzzles, see my examples in [my repo for 2023](https://github.com/anze3db/adventofcode2023).
+I use the following template to start solving puzzles, see examples in [my repo for 2023](https://github.com/anze3db/adventofcode2023) or [2024](https://github.com/anze3db/adventofcode2024).
 
 ```python
 from adventofcode import AoC

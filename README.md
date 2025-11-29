@@ -9,57 +9,81 @@ Helper utilities for solving Advent of Code puzzles.
 
 ## Usage
 
-### Install the package
-
-Install the package with pip:
-```bash
-pip install adventofcode
-```
-
-### Set your session cookie
-
-Add the [adventofcode.com](https://adventofcode.com) session cookie value to your env:
+### Setup 
 
 ```bash
-export AOC_SESSION="..."
+uv init
+uv add adventofcode
+adventofcode init
 ```
 
-Alternatively, you can save your `AOC_SESSION="******"` value in a `.env` file.
+This will generate the scripts for each day:
 
-> [!NOTE]
-> Setting AOC_SESSION will allow you to get your personal puzzle output (`aoc.get_input()`) and submit your answers with `aoc.submit_p1()` and `aoc.submit_p2()`.
+```bash
+.
+├── 01.py
+├── 02.py
+├── 03.py
+├── 04.py
+├── 05.py
+├── 06.py
+├── 07.py
+├── 08.py
+├── 09.py
+├── 10.py
+├── 11.py
+├── 12.py
+├── main.py
+├── pyproject.toml
+├── README.md
+└── uv.lock
 
-### Use a template to solve puzzles
+1 directory, 16 files
+```
 
-I use the following template to start solving puzzles, see examples in [my repo for 2023](https://github.com/anze3db/adventofcode2023) or [2024](https://github.com/anze3db/adventofcode2024).
+All the xx.py files look like this:
 
 ```python
 from adventofcode import AoC
 
 
-def part1(inp):
+def part1(inp: str):
     return None
 
 
-def part2(inp):
+def part2(inp: str):
     return None
 
 
 aoc = AoC(part_1=part1, part_2=part2)
 inp = """sample input"""
-# Run your part1 function with sample input and assert the expected result:
-aoc.assert_p1(inp, 42)
-# Run your part1 function on puzzle input and submit the answer returned:
+expected_result = None
+aoc.assert_p1(inp, expected_result)
 aoc.submit_p1()
 
-# Run your part2 function with sample input and assert the expected result:
-aoc.assert_p2(inp, 6*7)
-# Run your part2 function on puzzle input and submit the answer returned:
+expected_result = None
+aoc.assert_p2(inp, expected_result)
 aoc.submit_p2()
 ```
 
+You write your solution in part1 and part2 functions.
+
+`aoc.assert_p1(inp, expected_result)` will call your part1 function with inp and assert that the return matches expected_result.
+
+`aoc.submit_p1()` will fetch your puzzle input from the adventofcode.com, cache it locally and call `part1` with your puzzle input. If `part1` returns a value that isn't `None` that value will be submitted as your puzzle answer.
+
+
+### Set your session cookie
+
+Add the [adventofcode.com](https://adventofcode.com) session cookie value to your `.env` file or to your active session:
+
+```bash
+export AOC_SESSION="..."
+```
+
 > [!NOTE]
-> All submissions and fetched results are cached locally in the `.cache.db` file so that we don't spam the AoC servers or resubmit the same answer multiple times.
+> Setting AOC_SESSION will allow you to get your personal puzzle output (`aoc.get_input()`) and submit your answers with `aoc.submit_p1()` and `aoc.submit_p2()`.
+
 
 ### Or build your workflow using the AoC class
 

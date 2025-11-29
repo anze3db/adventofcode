@@ -22,9 +22,7 @@ AOC_URL = "https://adventofcode.com"
 
 AOC_SESSION = os.getenv("AOC_SESSION")
 
-AOC_NOT_SET_MSG = (
-    "Set AOC_SESSION env variable to your session cookie on adventofcode.com (export AOC_SESSION='your session cookie')"
-)
+AOC_NOT_SET_MSG = "Set AOC_SESSION to your `session` cookie on adventofcode.com. You can add it to your .env file or export it in your shell (export AOC_SESSION='your session cookie')"
 
 
 @contextmanager
@@ -38,13 +36,11 @@ def print_perf(typ=""):
 class AoC:
     def __init__(
         self,
+        part_1: Callable[[str], str | int],
+        part_2: Callable[[str], str | int],
+        *,
         day: int | None = None,
         year: int | None = None,
-        *,
-        part_1: Callable[[list[str]], Any] | None = None,
-        part_2: Callable[[list[str]], Any] | None = None,
-        part_1_no_splitlines: Callable[[str], Any] | None = None,
-        part_2_no_splitlines: Callable[[str], Any] | None = None,
     ):
         if day is None:
             current_filename = Path(sys.argv[0]).stem
@@ -58,8 +54,6 @@ class AoC:
         self.year = year
         self.part_1 = part_1
         self.part_2 = part_2
-        self.part_1_no_splitlines = part_1_no_splitlines
-        self.part_2_no_splitlines = part_2_no_splitlines
 
     def print_p1(self):
         console.log(get_puzzle(self.day, self.year, part=1))
@@ -68,66 +62,33 @@ class AoC:
         console.log(get_puzzle(self.day, self.year, part=2))
 
     def get_input(self):
-        return get_input(year=self.year, day=self.day).splitlines()
-
-    def get_input_no_splitlines(self):
         return get_input(year=self.year, day=self.day)
 
     def assert_p1(self, inp: str, expected: Any):
-        if self.part_1 is None and self.part_1_no_splitlines is None:
-            msg = "Set part_1 when initializing AoC()"
-            raise Exception(msg)
-
         res = None
         with print_perf("assert_p1"):
-            if self.part_1 is not None:
-                res = self.part_1(inp.splitlines())
-            elif self.part_1_no_splitlines is not None:
-                res = self.part_1_no_splitlines(inp)
+            res = self.part_1(inp)
 
         assert res is not None, "Result of part_1 should not be None"
         assert res == expected, f"{res} != {expected}"
 
     def assert_p2(self, inp: str, expected: Any):
-        if self.part_2 is None and self.part_2_no_splitlines is None:
-            msg = "Set part_2 when initializing AoC()"
-            raise Exception(msg)
-
         res = None
         with print_perf("assert_p2"):
-            if self.part_2 is not None:
-                res = self.part_2(inp.splitlines())
-            elif self.part_2_no_splitlines is not None:
-                res = self.part_2_no_splitlines(inp)
+            res = self.part_2(inp)
 
         assert res is not None, "Result of part_2 should not be None"
         assert res == expected, f"{res} != {expected}"
 
     def submit_p1(self, answer: Any | None = None):
-        if answer is not None:
-            ...
-        elif self.part_1 is not None:
-            inp = self.get_input()
-            with print_perf("submit_p1"):
-                answer = self.part_1(inp)
-        elif self.part_1_no_splitlines is not None:
-            inp = self.get_input_no_splitlines()
-            with print_perf("submit_p1"):
-                answer = self.part_1_no_splitlines(inp)
+        with print_perf("submit_p1"):
+            answer = self.part_1(self.get_input())
 
         submit(year=self.year, day=self.day, level=1, answer=answer)
 
     def submit_p2(self, answer: Any | None = None):
-        if answer is not None:
-            ...
-        elif self.part_2 is not None:
-            inp = self.get_input()
-            with print_perf("submit_p2"):
-                answer = self.part_2(inp)
-        elif self.part_2_no_splitlines is not None:
-            inp = self.get_input_no_splitlines()
-            with print_perf("submit_p2"):
-                answer = self.part_2_no_splitlines(inp)
+        with print_perf("submit_p2"):
+            answer = self.part_2(self.get_input())
 
         submit(year=self.year, day=self.day, level=2, answer=answer)
 

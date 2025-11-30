@@ -9,7 +9,7 @@ and this project adheres to [Calendar Versioning](https://calver.org).
 
 ### Added
 
- * `adventofcode benchmark` command that generates benchmark results both in the console and in in the README. Example README:
+ * `adventofcode benchmark` command that generates benchmark results both in the console and in the README. Example README:
 
 
 | Day | Status | Part 1 Time | Part 2 Time | Total Time |

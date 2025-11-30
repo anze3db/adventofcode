@@ -14,7 +14,7 @@ from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 from rich.console import Console
 
-load_dotenv()
+load_dotenv(Path(".env").absolute().as_posix())
 cache = percache.Cache(".cache", livesync=True)
 console = Console()
 
@@ -22,7 +22,10 @@ AOC_URL = "https://adventofcode.com"
 
 
 AOC_SESSION = os.getenv("AOC_SESSION")
-AOC_YEAR = int(os.getenv("AOC_YEAR", str(datetime.datetime.now(tz=datetime.timezone.utc).year)))
+est = datetime.timezone(datetime.timedelta(hours=-5))
+today_est = datetime.datetime.now(tz=est).date()
+
+AOC_YEAR = int(os.getenv("AOC_YEAR", str(today_est.year)))
 
 AOC_NOT_SET_MSG = (
     "Set AOC_SESSION to your `session` cookie on adventofcode.com. You can add it to your .env file or "

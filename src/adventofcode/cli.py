@@ -1,9 +1,25 @@
 import argparse
 import datetime
+import os
+import re
+import subprocess
+import sys
+from dataclasses import dataclass
 from pathlib import Path
 from textwrap import dedent
+from typing import Literal
 
+from dotenv import load_dotenv
 from rich.console import Console
+from rich.live import Live
+from rich.table import Table
+
+load_dotenv(Path(".env").absolute().as_posix())
+
+est = datetime.timezone(datetime.timedelta(hours=-5))
+today_est = datetime.datetime.now(tz=est).date()
+
+AOC_YEAR = int(os.getenv("AOC_YEAR", str(today_est.year)))
 
 console = Console()
 TEMPLATE = dedent('''\
@@ -75,6 +91,270 @@ def generate_templates(year: int, output_dir: Path, num_days: int) -> None:
         console.log("Created .env file (remember to set your AOC_SESSION)")
 
 
+def parse_timing_output(output: str) -> tuple[float, float]:
+    """Parse timing information from the AoC class output.
+
+    The AoC class outputs lines like:
+    - "0.00123s for submit_p1"
+    - "0.00456s for submit_p2"
+    """
+    part1_time = part2_time = 0.0
+
+    for line in output.split("\n"):
+        match = re.search(r"(\d+\.\d+)s for (?:submit_p1)", line)
+        if match:
+            part1_time = float(match.group(1))
+
+        match = re.search(r"(\d+\.\d+)s for (?:submit_p2)", line)
+        if match:
+            part2_time = float(match.group(1))
+
+    return part1_time, part2_time
+
+
+Color = Literal["green", "yellow", "red", "white"]
+
+
+@dataclass
+class DayResult:
+    day: str
+    part1_time: float = 0.0
+    part2_time: float = 0.0
+    total_time: float = 0.0
+
+    status: str = ""
+    error: str | None = None
+
+
+def time_to_color(seconds: float) -> Color:
+    if seconds <= 0.0:
+        return "white"
+    elif seconds < 0.1:
+        return "green"
+    elif seconds < 1:
+        return "yellow"
+    else:
+        return "red"
+
+
+def run_day(filepath: Path) -> DayResult:
+    day_num = int(re.sub(r"[^0-9]", "", filepath.stem))
+    if datetime.date(AOC_YEAR, 12, day_num) > today_est:
+        return DayResult(day=filepath.stem, status="🕑")
+
+    result = DayResult(day=filepath.stem)
+
+    try:
+        proc = subprocess.run(  # noqa: S603
+            [sys.executable, str(filepath)],
+            cwd=filepath.parent,
+            capture_output=True,
+            text=True,
+            timeout=300,  # 300 second timeout
+            check=False,
+        )
+    except subprocess.TimeoutExpired:
+        result.error = "Timeout (>5m)"
+        result.status = "⏰"
+        return result
+    except Exception as e:
+        result.error = str(e)
+        result.status = "❌"
+        return result
+
+    output = proc.stdout + proc.stderr
+
+    if proc.returncode != 0:
+        result.error = output.strip()[-200:] if output else "Unknown error"
+        result.status = "❌"
+        return result
+
+    part1_time, part2_time = parse_timing_output(output)
+    result.part1_time = part1_time
+    result.part2_time = part2_time
+    result.total_time = part1_time + part2_time
+
+    if part1_time > 0.0 and part2_time > 0.0:
+        result.status = "✅"
+    elif part1_time > 0.0 or part2_time > 0.0:
+        if AOC_YEAR < 2025 and day_num == 25:
+            result.status = "✅"
+        elif AOC_YEAR >= 2025 and day_num == 12:
+            result.status = "✅"
+        else:
+            result.status = "⚠️"
+    else:
+        result.status = "✏️"
+
+    return result
+
+
+def format_time(seconds: float) -> str:
+    if seconds <= 0.0:
+        return "-"
+    if seconds < 1:
+        return f"{seconds * 1000:.1f}ms"
+    return f"{seconds:.2f}s"
+
+
+def build_markdown_table(results: list[DayResult], total_time: float, total_part_1: float, total_part_2: float) -> str:
+    """Generate a markdown table from benchmark results."""
+    lines = [
+        "| Day | Status | Part 1 Time | Part 2 Time | Total Time | ",
+        "|:---:|:------:|------------:|------------:|-----------:| ",
+    ]
+
+    for r in results:
+        p1_time = markdown_color(format_time(r.part1_time), time_to_color(r.part1_time))
+        p2_time = markdown_color(format_time(r.part2_time), time_to_color(r.part2_time))
+        total = markdown_color(format_time(r.total_time), time_to_color(r.total_time))
+
+        lines.append(f"| {r.day} | {r.status} | {p1_time} | {p2_time} | {total} |")
+
+    p1_total = markdown_color(format_time(total_part_1), time_to_color(total_part_1))
+    p2_total = markdown_color(format_time(total_part_2), time_to_color(total_part_2))
+    total = markdown_color(format_time(total_time), time_to_color(total_time))
+    # Add total row
+    lines.append(f"| **Total** | | {p1_total} | {p2_total} | {total} |")
+    lines.append("")
+    lines.append("Legend:")
+    lines.append(" * 🟢 < 100ms")
+    lines.append(" * 🟡 100ms - 1s")
+    lines.append(" * 🔴 > 1s")
+    return "\n".join(lines)
+
+
+def update_readme(readme_path: Path, results_table: str) -> None:
+    """Update the README.md with benchmark results."""
+    marker_start = "<!-- BENCHMARK_RESULTS_START -->"
+    marker_end = "<!-- BENCHMARK_RESULTS_END -->"
+
+    if not readme_path.exists():
+        # Create a new README with results
+        content = f"# Advent of Code\n\n## Benchmark Results\n\n{marker_start}\n{results_table}\n{marker_end}\n"
+        readme_path.write_text(content)
+        console.log(f"Created {readme_path} with benchmark results")
+        return
+
+    content = readme_path.read_text()
+
+    if marker_start in content and marker_end in content:
+        # Replace existing results
+        pattern = re.compile(re.escape(marker_start) + r".*?" + re.escape(marker_end), re.DOTALL)
+        new_section = f"{marker_start}\n{results_table}\n{marker_end}"
+        content = pattern.sub(new_section, content)
+    else:
+        # Append results section
+        content += f"\n## Benchmark Results\n\n{marker_start}\n{results_table}\n{marker_end}\n"
+
+    readme_path.write_text(content)
+    console.log(f"Updated {readme_path} with benchmark results")
+
+
+def console_color(formatted_time: str, color: Color) -> str:
+    return f"[{color}]{formatted_time}[/{color}]"
+
+
+def markdown_color(formatted_time: str, color: Color) -> str:
+    if color == "white":
+        return formatted_time
+    elif color == "green":
+        return f"{formatted_time} 🟢"
+    elif color == "yellow":
+        return f"{formatted_time} 🟡"
+    else:
+        return f"{formatted_time} 🔴"
+
+
+def build_console_table(
+    results: list[DayResult], current_running: str | None, total_part_1: float, total_part_2: float, total_time: float
+) -> Table:
+    table = Table(title="Advent of Code Benchmarks")
+    table.add_column("Day", style="cyan", justify="right")
+    table.add_column("Status", justify="center")
+    table.add_column("Part 1", justify="right")
+    table.add_column("Part 2", justify="right")
+    table.add_column("Total", justify="right")
+
+    for r in results:
+        p1_time = console_color(format_time(r.part1_time), time_to_color(r.part1_time))
+        p2_time = console_color(format_time(r.part2_time), time_to_color(r.part2_time))
+        total = console_color(format_time(r.total_time), time_to_color(r.total_time))
+        status = r.status
+        table.add_row(r.day, status, p1_time, p2_time, total)
+
+    if current_running is not None:
+        table.add_row(str(current_running), "⏳", "...", "...", "...")
+
+    table.add_row(
+        "Total",
+        "",
+        console_color(format_time(total_part_1), time_to_color(total_part_1)),
+        console_color(format_time(total_part_2), time_to_color(total_part_2)),
+        console_color(format_time(total_time), time_to_color(total_time)),
+    )
+    return table
+
+
+def run_benchmark(directory: Path) -> None:
+    console.log("[bold]Running benchmarks for Advent of Code[/bold]\n")
+
+    # Find all day files
+    day_files = sorted(directory.glob("[0-9][0-9].py"))
+    if not day_files:
+        console.log("[yellow]No day files found[/yellow]")
+        return
+
+    results: list[DayResult] = []
+    total_time = 0.0
+    total_part_1 = 0.0
+    total_part_2 = 0.0
+
+    with Live(
+        build_console_table(
+            results=[],
+            current_running=None,
+            total_part_1=0.0,
+            total_part_2=0.0,
+            total_time=0.0,
+        ),
+        console=console,
+        refresh_per_second=4,
+    ) as live:
+        for filepath in day_files:
+            live.update(
+                build_console_table(
+                    results=results,
+                    current_running=filepath.stem,
+                    total_part_1=total_part_1,
+                    total_part_2=total_part_2,
+                    total_time=total_time,
+                )
+            )
+            result = run_day(filepath)
+            results.append(result)
+
+            total_part_1 += result.part1_time
+            total_part_2 += result.part2_time
+            total_time += result.total_time
+
+            live.update(
+                build_console_table(
+                    results=results,
+                    current_running=None,
+                    total_part_1=total_part_1,
+                    total_part_2=total_part_2,
+                    total_time=total_time,
+                )
+            )
+
+    readme_path = directory / "README.md"
+    results_table = build_markdown_table(
+        results, total_time=total_time, total_part_1=total_part_1, total_part_2=total_part_2
+    )
+    update_readme(readme_path, results_table)
+
+
 def main() -> None:
     """Main entry point for the CLI."""
     parser = argparse.ArgumentParser(
@@ -110,8 +390,39 @@ def main() -> None:
         "-y",
         "--year",
         type=int,
-        default=datetime.datetime.now(tz=datetime.timezone.utc).year,
-        help="Year to generate templates for (default: current year)",
+        default=AOC_YEAR,
+        help="Year to generate templates for (default: AOC_YEAR env variable or current year)",
+    )
+
+    # Benchmark command
+    benchmark_parser = subparsers.add_parser(
+        "benchmark",
+        help="Run all days and generate benchmark results",
+        description=("Run all day solutions, measure execution times, and update the README with a benchmark table."),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog=dedent("""\
+            Examples:
+                adventofcode benchmark               # Run benchmarks in current directory
+                adventofcode benchmark ./2024        # Run benchmarks in the ./2024 directory
+
+            The benchmark will:
+            1. Find all day files (01.py, 02.py, etc.)
+            2. Run each day script (python 01.py, etc.)
+            3. Parse execution times from the output
+            4. Display a live-updating table in the console
+            5. Update README.md with a benchmark results table
+
+            Note: Each day script must complete successfully (exit code 0)
+            to be marked as passing. The timing is parsed from the AoC
+            class output (e.g., "0.00123s for submit_p1").
+            """),
+    )
+    benchmark_parser.add_argument(
+        "directory",
+        type=Path,
+        nargs="?",
+        default=Path("."),
+        help="Directory containing day files (default: current directory)",
     )
 
     args = parser.parse_args()
@@ -119,6 +430,8 @@ def main() -> None:
     match args.command:
         case "init":
             generate_templates(args.year, args.directory, 12 if args.year >= 2025 else 25)
+        case "benchmark":
+            run_benchmark(args.directory)
         case _:
             parser.print_help()
 

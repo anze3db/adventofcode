@@ -5,6 +5,47 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Calendar Versioning](https://calver.org).
 
+## [25.1]
+
+### Added
+
+ * `adventofcode benchmark` command that generates benchmark results both in the console and in in the README. Example README:
+
+
+| Day | Status | Part 1 Time | Part 2 Time | Total Time |
+|:---:|:------:|------------:|------------:|-----------:|
+| 01 | ✅ | 2.1ms 🟢 | 0.6ms 🟢 | 2.6ms 🟢 |
+| 02 | ✅ | 1.9ms 🟢 | 1.2ms 🟢 | 3.1ms 🟢 |
+| 03 | ✅ | 1.5ms 🟢 | 0.5ms 🟢 | 2.0ms 🟢 |
+| 04 | ✅ | 22.5ms 🟢 | 5.2ms 🟢 | 27.8ms 🟢 |
+| 05 | ✅ | 3.6ms 🟢 | 4.1ms 🟢 | 7.7ms 🟢 |
+| 06 | ✅ | 3.6ms 🟢 | 4.14s 🔴 | 4.14s 🔴 |
+| 07 | ✅ | 33.8ms 🟢 | 1.07s 🔴 | 1.11s 🔴 |
+| 08 | ✅ | 1.0ms 🟢 | 0.7ms 🟢 | 1.7ms 🟢 |
+| 09 | ✅ | 6.3ms 🟢 | 1.08s 🔴 | 1.09s 🔴 |
+| 10 | ✅ | 3.2ms 🟢 | 3.2ms 🟢 | 6.4ms 🟢 |
+| 11 | ✅ | 1.7ms 🟢 | 45.0ms 🟢 | 46.7ms 🟢 |
+| 12 | ✅ | 33.3ms 🟢 | 31.0ms 🟢 | 64.4ms 🟢 |
+| 13 | ✅ | 118.1ms 🟡 | 360.8ms 🟡 | 478.9ms 🟡 |
+| 14 | ✅ | 3.7ms 🟢 | 411.4ms 🟡 | 415.1ms 🟡 |
+| 15 | ✅ | 3.5ms 🟢 | 5.0ms 🟢 | 8.4ms 🟢 |
+| 16 | ✅ | 87.1ms 🟢 | 133.9ms 🟡 | 221.1ms 🟡 |
+| 17 | ✅ | 0.7ms 🟢 | 21.0ms 🟢 | 21.7ms 🟢 |
+| 18 | ✅ | 7.2ms 🟢 | 7.49s 🔴 | 7.50s 🔴 |
+| 19 | ✅ | 9.7ms 🟢 | 111.7ms 🟡 | 121.4ms 🟡 |
+| 20 | ✅ | 50.54s 🔴 | 4.46s 🔴 | 54.99s 🔴 |
+| 21 | ✅ | 0.4ms 🟢 | 0.3ms 🟢 | 0.8ms 🟢 |
+| 22 | ✅ | 603.7ms 🟡 | 1.90s 🔴 | 2.50s 🔴 |
+| 23 | ✅ | 255.0ms 🟡 | 263.4ms 🟡 | 518.4ms 🟡 |
+| 24 | ⚠️ | 1.4ms 🟢 | - | 1.4ms 🟢 |
+| 25 | ✅ | 7.2ms 🟢 | - | 7.2ms 🟢 |
+| **Total** | | 51.75s 🔴 | 21.53s 🔴 | 73.28s 🔴 |
+
+Legend:
+ * 🟢 < 100ms
+ * 🟡 100ms - 1s
+ * 🔴 > 1s
+
 ## [25.0]
 
 ### Added

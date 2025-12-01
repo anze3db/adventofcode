@@ -16,7 +16,7 @@ Helper utilities for solving Advent of Code puzzles.
 ```bash
 uv init
 uv add adventofcode
-adventofcode init
+uv run adventofcode init
 ```
 
 This will generate the scripts for each day:
@@ -91,7 +91,7 @@ export AOC_SESSION="..."
 You can benchmark your solutions with
 
 ```shell
-adventofcode benchmark
+uv run adventofcode benchmark
 ```
 
 This run each day and parse the timing results from the output. It will print the results in the console and in your README.

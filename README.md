@@ -1,13 +1,11 @@
-# 🎄 adventofcode
-
-
-## Your framework for solving and benchmarking Advent of Code puzzles 🧩
+# 🎄 adventofcode [![PyPI - Version](https://img.shields.io/pypi/v/adventofcode.svg)](https://pypi.org/project/adventofcode)  [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/adventofcode.svg)](https://pypi.org/project/adventofcode)
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/a00cec03-ab16-47c9-b9bf-a5c9162bcdfd" width="742" alt="benchmark results">
+  <img width="742" height="613" alt="Screenshot 2025-12-02 at 10 04 42" src="https://github.com/user-attachments/assets/77b711b3-c2a2-4719-8d8a-083af2067c62" />
 </p>
 
-## Features
+
+### Your framework for solving [Advent Of Code](https://adventofcode.com) puzzles 🧩 and benchmarking solutions 🚀
 
 * Project scaffolding with `uv run adventofcode init`.
 * Assert and submit your solutions with `uv run adventofcode run`.
@@ -15,9 +13,22 @@
 * No copy-pasting puzzle inputs or loading inputs from files.
 * Submit the answer immediately when your code returns the result. 🏅
 
-## Usage
+------
 
-### Setup
+**Table of Contents**
+
+- [Setup](#setup)
+- [Session cookie](#session-cookie)
+- [Run and submit your solution](#run-and-submit-your-solution)
+- [Benchmark all your solutions](#benchmark-all-your-solutions)
+- [Using AoC class](#using-aoc-class)
+- [Happy solving 🎄](#happy-solving-)
+- [Similar projects](#similar-projects)
+
+
+
+
+## Setup
 
 ```bash
 uv init
@@ -76,23 +87,12 @@ def part2(inp: str) -> str | int | None:
     return None
 
 ```
+## Session cookie
 
-Implement your solution in `part1` and `part2` functions and run
+Before we can run these files we need to set up your session cookie. You can find the session cookie by going to [adventofcode.com] in your browser. Make sure you are logged in, then open your browser's developer tools and navigate to Application → Storage → Cookies. Look for the cookie named `session` and copy its value.
 
-```bash
-uv run adventofcode run 01.py
-```
 
-This will:
-
-* Run your day 1, `part1` function with the inputs provided in the `part1_asserts` iterable and compare them with the expected values. If the function's return value doesn't match the expected answer, the command will stop. *Hint*: Each puzzle usually contains example input and an expected answer—these make for great asserts!
-* If all the `part1_asserts` pass, `part1` will be called with your puzzle input fetched from adventofcode.com using your session cookie.
-* If `part1` returns a non-None value for your puzzle input, that value will be submitted to adventofcode.com as your part 1 answer using your session cookie. All answer submissions are cached, so each unique answer will only be submitted once.
-* If your answer was correct the same process repeats for `part2`.
-
-### Set your session cookie
-
-Add the [adventofcode.com](https://adventofcode.com) session cookie value to your `.env` file:
+Then  add the [adventofcode.com](https://adventofcode.com) session cookie value to your `.env` file:
 
 ```
 # Set your Advent of Code session cookie below
@@ -109,10 +109,22 @@ or to your environment variables:
 export AOC_SESSION="..."
 ```
 
-> [!NOTE]
-> You can find the session cookie by going to adventofcode.com in your browser. Make sure you are logged in, then open your browser's developer tools and navigate to Application → Storage → Cookies. Look for the cookie named `session` and copy its value.
+## Run and submit your solution
 
-### Benchmarks
+Implement your solution in `part1` and `part2` functions and run
+
+```bash
+uv run adventofcode run 01.py
+```
+
+This will:
+
+* Run your day 1, `part1` function with the inputs provided in the `part1_asserts` iterable and compare them with the expected values. If the function's return value doesn't match the expected answer, the command will stop. *Hint*: Each puzzle usually contains example input and an expected answer—these make for great asserts!
+* If all the `part1_asserts` pass, `part1` will be called with your puzzle input fetched from adventofcode.com using your session cookie.
+* If `part1` returns a non-None value for your puzzle input, that value will be submitted to adventofcode.com as your part 1 answer using your session cookie. All answer submissions are cached, so each unique answer will only be submitted once.
+* If your answer was correct the same process repeats for `part2`.
+
+## Benchmark all your solutions
 
 You can benchmark your solutions with
 
@@ -164,7 +176,9 @@ Legend:
  * 🔴 > 1s
 <!-- BENCHMARK_RESULTS_END -->
 
-### Alternatively, you can build your own workflow using the lower level AoC class
+## Using AoC class
+
+Alternatively, you can build your own workflow using the lower level AoC class
 
 ```python
 from adventofcode import AoC

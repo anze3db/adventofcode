@@ -25,7 +25,20 @@ AOC_YEAR = int(os.getenv("AOC_YEAR", str(today_est.year)))
 
 console = Console(log_path=False)
 TEMPLATE = dedent('''\
-    from adventofcode import AoC
+    """🎄 Solution for Day {day} of Advent of Code {year} 🎄
+
+    Usage:
+
+    uv run adventofcode run {day:02d}.py
+    """
+
+    inp = """your input"""
+    part1_asserts = [
+        (inp, None),
+    ]
+    part2_asserts = [
+        (inp, None),
+    ]
 
 
     def part1(inp: str) -> str | int | None:
@@ -34,17 +47,6 @@ TEMPLATE = dedent('''\
 
     def part2(inp: str) -> str | int | None:
         return None
-
-
-    aoc = AoC(part_1=part1, part_2=part2)
-    inp = """sample input"""
-    expected_result = None
-    aoc.assert_p1(inp, expected_result)
-    aoc.submit_p1()
-
-    expected_result = None
-    aoc.assert_p2(inp, expected_result)
-    aoc.submit_p2()
     ''')
 
 
@@ -62,7 +64,7 @@ def generate_templates(year: int, output_dir: Path, num_days: int) -> None:
             console.log(f"Skipping {filename} (already exists)")
             continue
 
-        filepath.write_text(TEMPLATE)
+        filepath.write_text(TEMPLATE.format(day=day, year=year))
         console.log(f"Created {filename}")
 
     gitignore_path = output_dir / ".gitignore"

@@ -1,12 +1,10 @@
-# adventofcode
+# adventofcode - a framework for solving Advent of Code puzzles 🎄
 
-Helper utilities for solving Advent of Code puzzles.
-
-* Project scaffolding with `uv run adventofcode init`
-* Assert and submit your solutions with `uv run adventofcode run`
-* Benchmark all your solutions with `uv run adventofcode benchmark`
+* Project scaffolding with `uv run adventofcode init`.
+* Assert and submit your solutions with `uv run adventofcode run`.
+* Benchmark all your solutions with `uv run adventofcode benchmark`.
 * No copy-pasting puzzle inputs or loading inputs from files.
-* Submit the answer immediately when your code returns the result 🏅
+* Submit the answer immediately when your code returns the result. 🏅
 
 ## Usage
 
@@ -73,12 +71,12 @@ def part2(inp: str) -> str | int | None:
 Implement your solution in `part1` and `part2` functions and run
 
 ```bash
-uv run adventofcode run
+uv run adventofcode run 01.py
 ```
 
 This will:
 
-* Run your `part1` function with the inputs provided in the `part1_asserts` iterable and compare them with the expected values. If the function's return value doesn't match the expected answer, the command will stop. *Hint*: Each puzzle usually contains example input and an expected answer—these make for great asserts!
+* Run your day 1, `part1` function with the inputs provided in the `part1_asserts` iterable and compare them with the expected values. If the function's return value doesn't match the expected answer, the command will stop. *Hint*: Each puzzle usually contains example input and an expected answer—these make for great asserts!
 * If all the `part1_asserts` pass, `part1` will be called with your puzzle input fetched from adventofcode.com using your session cookie.
 * If `part1` returns a non-None value for your puzzle input, that value will be submitted to adventofcode.com as your part 1 answer using your session cookie. All answer submissions are cached, so each unique answer will only be submitted once.
 * If your answer was correct the same process repeats for `part2`.
@@ -151,7 +149,6 @@ Legend:
  * 🟡 100ms - 1s
  * 🔴 > 1s
 
-
 ### Alternatively, you can build your own workflow using the lower level AoC class
 
 ```python
@@ -170,7 +167,10 @@ aoc.print_p2() # prints the second part of the puzzle
 aoc.submit_p2('part 2 answer') # submits the answer to the second part of the puzzle
 ```
 
-
 ### Happy solving 🎄
 
 Enjoy and have fun!
+
+### Similar projects
+
+* [elf](https://pypi.org/project/elf/)

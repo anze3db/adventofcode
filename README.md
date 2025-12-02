@@ -1,11 +1,11 @@
-# 🎄 adventofcode 🎄
-
-<p align="center">
-  <img src="https://github.com/user-attachments/assets/a00cec03-ab16-47c9-b9bf-a5c9162bcdfd" width="742" alt="benchmark results">
-</p>
+# 🎄 adventofcode
 
 <p align="center">
   Your framework for solving and benchmarking Advent of Code puzzles 🧩
+</p>
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/a00cec03-ab16-47c9-b9bf-a5c9162bcdfd" width="742" alt="benchmark results">
 </p>
 
 * Project scaffolding with `uv run adventofcode init`.

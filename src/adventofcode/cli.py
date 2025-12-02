@@ -1,5 +1,6 @@
 import argparse
 import datetime
+import importlib.util
 import os
 import re
 import subprocess
@@ -14,6 +15,7 @@ from rich.console import Console
 from rich.live import Live
 from rich.table import Table
 
+from adventofcode import AoC
 from adventofcode.utils import PART_1_RETURN_STR, PART_2_RETURN_STR, format_time
 
 load_dotenv(Path(".env").absolute().as_posix())
@@ -50,7 +52,7 @@ TEMPLATE = dedent('''\
     ''')
 
 
-def generate_templates(year: int, output_dir: Path, num_days: int) -> None:
+def init_templates(year: int, output_dir: Path, num_days: int) -> None:
     """Generate template files for the specified year."""
     output_dir.mkdir(parents=True, exist_ok=True)
 
@@ -152,9 +154,13 @@ def run_day(filepath: Path) -> DayResult:
 
     result = DayResult(day=filepath.stem)
 
+    if "adventofcode run" in filepath.read_text():
+        command = ["adventofcode", "run", str(filepath)]
+    else:
+        command = [sys.executable, str(filepath)]
     try:
         proc = subprocess.run(  # noqa: S603
-            [sys.executable, str(filepath)],
+            command,
             cwd=filepath.parent,
             capture_output=True,
             text=True,
@@ -296,7 +302,7 @@ def build_console_table(
     return table
 
 
-def run_benchmark(directory: Path) -> None:
+def benchmark(directory: Path) -> None:
     console.log("[bold]Running benchmarks for Advent of Code[/bold]\n")
 
     # Find all day files
@@ -353,6 +359,37 @@ def run_benchmark(directory: Path) -> None:
         results, total_time=total_time, total_part_1=total_part_1, total_part_2=total_part_2
     )
     update_readme(readme_path, results_table)
+
+
+def run(filepath: Path) -> None:
+    # Import the python module on path
+    if not filepath.exists():
+        console.log(f"[red]File {filepath} does not exist[/red]")
+        return
+
+    console.log(f"[bold]Running {filepath}[/bold]\n")
+    spec = importlib.util.spec_from_file_location(filepath.stem, filepath)
+    if not spec or not spec.loader:
+        console.log(f"[red]Could not load module from {filepath}[/red]")
+        return
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+
+    aoc = AoC(part_1=module.part1, part_2=module.part2, day=int(filepath.stem), year=AOC_YEAR)
+    if hasattr(module, "part1_asserts"):
+        for test_input, expected in module.part1_asserts:
+            aoc.assert_p1(test_input, expected)
+    else:
+        console.log("[yellow]No part 1 assertions found[/yellow]\n")
+
+    aoc.submit_p1()
+    if hasattr(module, "part2_asserts"):
+        for test_input, expected in module.part2_asserts:
+            aoc.assert_p2(test_input, expected)
+    else:
+        console.log("[yellow]No part 2 assertions found[/yellow]\n")
+
+    aoc.submit_p2()
 
 
 def main() -> None:
@@ -425,13 +462,32 @@ def main() -> None:
         help="Directory containing day files (default: current directory)",
     )
 
+    # Run Command
+    run_parser = subparsers.add_parser(
+        "run",
+        help="Run a specific day's solution",
+        description="Run the solution for a specific day and display the output.",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog=dedent("""\
+            Examples:
+                adventofcode run 01.py # Run day 1 solution in current directory
+            """),
+    )
+    run_parser.add_argument(
+        "filepath",
+        type=Path,
+        help="Path to the day file to run (e.g., 01.py)",
+    )
+
     args = parser.parse_args()
 
     match args.command:
         case "init":
-            generate_templates(args.year, args.directory, 12 if args.year >= 2025 else 25)
+            init_templates(args.year, args.directory, 12 if args.year >= 2025 else 25)
         case "benchmark":
-            run_benchmark(args.directory)
+            benchmark(args.directory)
+        case "run":
+            run(args.filepath)
         case _:
             parser.print_help()
 

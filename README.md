@@ -1,7 +1,7 @@
 # 🎄 adventofcode [![PyPI - Version](https://img.shields.io/pypi/v/adventofcode.svg)](https://pypi.org/project/adventofcode)  [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/adventofcode.svg)](https://pypi.org/project/adventofcode)
 
 <p align="center">
-  <img width="742" height="613" alt="Screenshot 2025-12-02 at 10 04 42" src="https://github.com/user-attachments/assets/77b711b3-c2a2-4719-8d8a-083af2067c62" />
+  <img width="742" height="613" alt="Screenshot 2025-12-02 at 10 04 42" src="https://github.com/anze3db/adventofcode/blob/main/screenshot.png?raw=true" />
 </p>
 
 

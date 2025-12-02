@@ -1,5 +1,9 @@
 # adventofcode - a framework for solving Advent of Code puzzles 🎄
 
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/a00cec03-ab16-47c9-b9bf-a5c9162bcdfd" width="742" alt="benchmark results">
+</p>
+
 * Project scaffolding with `uv run adventofcode init`.
 * Assert and submit your solutions with `uv run adventofcode run`.
 * Benchmark all your solutions with `uv run adventofcode benchmark`.
@@ -113,41 +117,47 @@ uv run adventofcode benchmark
 
 This will run each day's solution and parse the timing results from the output. The results will be printed to the console as well as added to your README.md.
 
+Example console output:
+
+
+
 Example README:
 
+<!-- BENCHMARK_RESULTS_START -->
 | Day | Status | Part 1 Time | Part 2 Time | Total Time |
 |:---:|:------:|------------:|------------:|-----------:|
-| 01 | ✅ | 2.1ms 🟢 | 0.6ms 🟢 | 2.6ms 🟢 |
-| 02 | ✅ | 1.9ms 🟢 | 1.2ms 🟢 | 3.1ms 🟢 |
-| 03 | ✅ | 1.5ms 🟢 | 0.5ms 🟢 | 2.0ms 🟢 |
-| 04 | ✅ | 22.5ms 🟢 | 5.2ms 🟢 | 27.8ms 🟢 |
-| 05 | ✅ | 3.6ms 🟢 | 4.1ms 🟢 | 7.7ms 🟢 |
-| 06 | ✅ | 3.6ms 🟢 | 4.14s 🔴 | 4.14s 🔴 |
-| 07 | ✅ | 33.8ms 🟢 | 1.07s 🔴 | 1.11s 🔴 |
-| 08 | ✅ | 1.0ms 🟢 | 0.7ms 🟢 | 1.7ms 🟢 |
-| 09 | ✅ | 6.3ms 🟢 | 1.08s 🔴 | 1.09s 🔴 |
-| 10 | ✅ | 3.2ms 🟢 | 3.2ms 🟢 | 6.4ms 🟢 |
-| 11 | ✅ | 1.7ms 🟢 | 45.0ms 🟢 | 46.7ms 🟢 |
-| 12 | ✅ | 33.3ms 🟢 | 31.0ms 🟢 | 64.4ms 🟢 |
-| 13 | ✅ | 118.1ms 🟡 | 360.8ms 🟡 | 478.9ms 🟡 |
-| 14 | ✅ | 3.7ms 🟢 | 411.4ms 🟡 | 415.1ms 🟡 |
-| 15 | ✅ | 3.5ms 🟢 | 5.0ms 🟢 | 8.4ms 🟢 |
-| 16 | ✅ | 87.1ms 🟢 | 133.9ms 🟡 | 221.1ms 🟡 |
-| 17 | ✅ | 0.7ms 🟢 | 21.0ms 🟢 | 21.7ms 🟢 |
-| 18 | ✅ | 7.2ms 🟢 | 7.49s 🔴 | 7.50s 🔴 |
-| 19 | ✅ | 9.7ms 🟢 | 111.7ms 🟡 | 121.4ms 🟡 |
-| 20 | ✅ | 50.54s 🔴 | 4.46s 🔴 | 54.99s 🔴 |
-| 21 | ✅ | 0.4ms 🟢 | 0.3ms 🟢 | 0.8ms 🟢 |
-| 22 | ✅ | 603.7ms 🟡 | 1.90s 🔴 | 2.50s 🔴 |
-| 23 | ✅ | 255.0ms 🟡 | 263.4ms 🟡 | 518.4ms 🟡 |
-| 24 | ⚠️ | 1.4ms 🟢 | - | 1.4ms 🟢 |
-| 25 | ✅ | 7.2ms 🟢 | - | 7.2ms 🟢 |
-| **Total** | | 51.75s 🔴 | 21.53s 🔴 | 73.28s 🔴 |
+| 01 | ✅ | 0.28ms 🟢 | 0.41ms 🟢 | 0.69ms 🟢 |
+| 02 | ✅ | 0.76ms 🟢 | 1.13ms 🟢 | 1.89ms 🟢 |
+| 03 | ✅ | 0.15ms 🟢 | 0.33ms 🟢 | 0.48ms 🟢 |
+| 04 | ✅ | 21.43ms 🟢 | 4.79ms 🟢 | 26.22ms 🟢 |
+| 05 | ✅ | 1.95ms 🟢 | 3.51ms 🟢 | 5.46ms 🟢 |
+| 06 | ✅ | 3.04ms 🟢 | 3.91s 🔴 | 3.91s 🔴 |
+| 07 | ✅ | 30.58ms 🟢 | 1.01s 🔴 | 1.04s 🔴 |
+| 08 | ✅ | 0.42ms 🟢 | 0.60ms 🟢 | 1.02ms 🟢 |
+| 09 | ✅ | 5.75ms 🟢 | 1.01s 🔴 | 1.02s 🔴 |
+| 10 | ✅ | 2.85ms 🟢 | 3.05ms 🟢 | 5.90ms 🟢 |
+| 11 | ✅ | 0.97ms 🟢 | 37.60ms 🟢 | 38.57ms 🟢 |
+| 12 | ✅ | 30.75ms 🟢 | 31.96ms 🟢 | 62.71ms 🟢 |
+| 13 | ✅ | 108.79ms 🟡 | 342.44ms 🟡 | 451.23ms 🟡 |
+| 14 | ✅ | 3.03ms 🟢 | 380.22ms 🟡 | 383.25ms 🟡 |
+| 15 | ✅ | 2.28ms 🟢 | 4.71ms 🟢 | 6.99ms 🟢 |
+| 16 | ✅ | 80.55ms 🟢 | 124.54ms 🟡 | 205.09ms 🟡 |
+| 17 | ✅ | 0.02ms 🟢 | 19.99ms 🟢 | 20.01ms 🟢 |
+| 18 | ✅ | 5.66ms 🟢 | 6.98s 🔴 | 6.99s 🔴 |
+| 19 | ✅ | 9.05ms 🟢 | 99.83ms 🟢 | 108.88ms 🟡 |
+| 20 | ✅ | 47.46s 🔴 | 4.28s 🔴 | 51.74s 🔴 |
+| 21 | ✅ | 0.22ms 🟢 | 0.25ms 🟢 | 0.47ms 🟢 |
+| 22 | ✅ | 603.65ms 🟡 | 1.87s 🔴 | 2.47s 🔴 |
+| 23 | ✅ | 223.80ms 🟡 | 222.87ms 🟡 | 446.67ms 🟡 |
+| 24 | ⚠️ | 0.94ms 🟢 | - | 0.94ms 🟢 |
+| 25 | ✅ | 6.02ms 🟢 | - | 6.02ms 🟢 |
+| **Total** | | 48.60s 🔴 | 20.34s 🔴 | 68.94s 🔴 |
 
 Legend:
  * 🟢 < 100ms
  * 🟡 100ms - 1s
  * 🔴 > 1s
+<!-- BENCHMARK_RESULTS_END -->
 
 ### Alternatively, you can build your own workflow using the lower level AoC class
 

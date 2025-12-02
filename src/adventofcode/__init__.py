@@ -14,6 +14,8 @@ from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 from rich.console import Console
 
+from adventofcode.utils import PART_1_RETURN_STR, PART_2_RETURN_STR, format_time
+
 load_dotenv(Path(".env").absolute().as_posix())
 cache = percache.Cache(".cache", livesync=True)
 console = Console(log_path=False)
@@ -33,12 +35,23 @@ AOC_NOT_SET_MSG = (
 )
 
 
+class PerfResult:
+    """Container to capture result from within a print_perf context."""
+
+    def __init__(self):
+        self.value = None
+
+
 @contextmanager
 def print_perf(typ=""):
     t0 = time.perf_counter()
-    yield
+    result = PerfResult()
+    yield result
     diff = time.perf_counter() - t0
-    console.log(f"{diff:.5f}s for {typ}")
+    if result.value is not None:
+        console.log(f"{format_time(diff)} to {typ}: {result.value}")
+    else:
+        console.log(f"{format_time(diff)} to {typ}")
 
 
 class AoC:
@@ -74,30 +87,46 @@ class AoC:
 
     def assert_p1(self, inp: str, expected: Any):
         res = None
-        with print_perf("assert_p1"):
+        with print_perf("assert part1"):
             res = self.part_1(inp)
 
-        assert res is not None, "Result of part_1 should not be None"
-        assert res == expected, f"{res} != {expected}"
+        if res is None:
+            console.log(f"[red]part_1 returned [white]None[/white] for input:[/red]\n{inp[:100]}")
+            sys.exit(10)
+        if res != expected:
+            console.log(
+                f"[red]part_1 returned [white]{res}[/white] instead of expected [white]{expected}[/white]"
+                f" for input:[/red]\n{inp[:100]}"
+            )
+            sys.exit(11)
 
     def assert_p2(self, inp: str, expected: Any):
         res = None
-        with print_perf("assert_p2"):
+        with print_perf("assert part2"):
             res = self.part_2(inp)
 
-        assert res is not None, "Result of part_2 should not be None"
-        assert res == expected, f"{res} != {expected}"
+        if res is None:
+            console.log(f"[red]part_2 returned [white]None[/white] for input:[/red]\n{inp[:100]}")
+            sys.exit(20)
+        if res != expected:
+            console.log(
+                f"[red]part_2 returned [white]{res}[/white] instead of expected [white]{expected}[/white]"
+                f" for input:[/red]\n{inp[:100]}"
+            )
+            sys.exit(21)
 
     def submit_p1(self, answer: Any | None = None):
-        with print_perf("submit_p1"):
-            answer = self.part_1(self.get_input())
-
+        inp = self.get_input()
+        with print_perf(PART_1_RETURN_STR) as perf:
+            answer = self.part_1(inp)
+            perf.value = answer
         submit(year=self.year, day=self.day, level=1, answer=answer)
 
     def submit_p2(self, answer: Any | None = None):
-        with print_perf("submit_p2"):
-            answer = self.part_2(self.get_input())
-
+        inp = self.get_input()
+        with print_perf(PART_2_RETURN_STR) as perf:
+            answer = self.part_2(inp)
+            perf.value = answer
         submit(year=self.year, day=self.day, level=2, answer=answer)
 
 

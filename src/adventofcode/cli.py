@@ -14,6 +14,8 @@ from rich.console import Console
 from rich.live import Live
 from rich.table import Table
 
+from adventofcode.utils import PART_1_RETURN_STR, PART_2_RETURN_STR, format_time
+
 load_dotenv(Path(".env").absolute().as_posix())
 
 est = datetime.timezone(datetime.timedelta(hours=-5))
@@ -95,19 +97,23 @@ def parse_timing_output(output: str) -> tuple[float, float]:
     """Parse timing information from the AoC class output.
 
     The AoC class outputs lines like:
-    - "0.00123s for submit_p1"
-    - "0.00456s for submit_p2"
+    - "0.12ms to return part1 result: "
+    - "1.45s to return part2 result: "
     """
     part1_time = part2_time = 0.0
 
     for line in output.split("\n"):
-        match = re.search(r"(\d+\.\d+)s for (?:submit_p1)", line)
+        match = re.search(r"(\d+\.\d+)m?s to " + PART_1_RETURN_STR, line)
         if match:
             part1_time = float(match.group(1))
+            if "ms" in line:
+                part1_time /= 1000.0
 
-        match = re.search(r"(\d+\.\d+)s for (?:submit_p2)", line)
+        match = re.search(r"(\d+\.\d+)m?s to " + PART_2_RETURN_STR, line)
         if match:
             part2_time = float(match.group(1))
+            if "ms" in line:
+                part2_time /= 1000.0
 
     return part1_time, part2_time
 
@@ -187,14 +193,6 @@ def run_day(filepath: Path) -> DayResult:
         result.status = "✏️"
 
     return result
-
-
-def format_time(seconds: float) -> str:
-    if seconds <= 0.0:
-        return "-"
-    if seconds < 1:
-        return f"{seconds * 1000:.1f}ms"
-    return f"{seconds:.2f}s"
 
 
 def build_markdown_table(results: list[DayResult], total_time: float, total_part_1: float, total_part_2: float) -> str:

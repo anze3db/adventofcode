@@ -1,12 +1,13 @@
 # 🎄 adventofcode
 
-<p align="center">
-  Your framework for solving and benchmarking Advent of Code puzzles 🧩
-</p>
+
+## Your framework for solving and benchmarking Advent of Code puzzles 🧩
 
 <p align="center">
   <img src="https://github.com/user-attachments/assets/a00cec03-ab16-47c9-b9bf-a5c9162bcdfd" width="742" alt="benchmark results">
 </p>
+
+## Features
 
 * Project scaffolding with `uv run adventofcode init`.
 * Assert and submit your solutions with `uv run adventofcode run`.

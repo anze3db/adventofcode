@@ -2,11 +2,10 @@
 
 Helper utilities for solving Advent of Code puzzles.
 
-* Project scaffolding with `adventofcode init`
+* Project scaffolding with `uv run adventofcode init`
+* Assert and submit your solutions with `uv run adventofcode run`
 * Benchmark all the days with `adventofcode benchmark`
-* No copy-pasting puzzle inputs into files.
-* No need to use low-level file APIs to read your inputs.
-* Performance reports for example inputs and puzzle inputs.
+* No copy-pasting puzzle inputs or loading input from files.
 * Submit the answer immediately when your code returns the result 🏅
 
 ## Usage
@@ -46,45 +45,65 @@ This will generate the scripts for each day:
 All the py files look like this:
 
 ```python
-from adventofcode import AoC
+"""🎄 Solution for Day 1 of Advent of Code 2025 🎄
+
+Usage:
+
+uv run adventofcode run 01.py
+"""
+
+inp = """your input"""
+part1_asserts = [
+    (inp, None),
+]
+part2_asserts = [
+    (inp, None),
+]
 
 
-def part1(inp: str):
+def part1(inp: str) -> str | int | None:
     return None
 
 
-def part2(inp: str):
+def part2(inp: str) -> str | int | None:
     return None
 
-
-aoc = AoC(part_1=part1, part_2=part2)
-inp = """sample input"""
-expected_result = None
-aoc.assert_p1(inp, expected_result)
-aoc.submit_p1()
-
-expected_result = None
-aoc.assert_p2(inp, expected_result)
-aoc.submit_p2()
 ```
 
-You write your solution in part1 and part2 functions.
+Implement your solution in `part1` and `part2` functions and run
 
-`aoc.assert_p1(inp, expected_result)` will call your part1 function with inp and assert that the return matches expected_result.
+```bash
+uv run adventofcode run
+```
 
-`aoc.submit_p1()` will fetch your puzzle input from the adventofcode.com, cache it locally and call `part1` with your puzzle input. If `part1` returns a value that isn't `None` that value will be submitted as your puzzle answer.
+This will:
 
+* Run your `part1` function with inputs provided in `part1_asserts` iterable and compare them with provided values (if function return doesn't match the expect answer the command will stop).
+* If all the `part1_asserts` passed the `part1` will be called with your puzzle input fetched from adventofcode.com using your session cookie. Each puzzle usually contain example input and expected answer. These make for great asserts!
+* If `part1` returns a non-None value for your puzzle input, that value will be submitted to adventofcode.com as your part 1 answer again using your session cookie. All your answer submissions are cached and each unique answer will only be submitted once.
+* If your answer was correct the same process repeats for `part2`.
 
 ### Set your session cookie
 
-Add the [adventofcode.com](https://adventofcode.com) session cookie value to your `.env` file or to your active session:
+Add the [adventofcode.com](https://adventofcode.com) session cookie value to your `.env` file:
+
+```
+# Set your Advent of Code session cookie below
+# You can find it in your browser's developer tools after logging in to adventofcode.com.
+# The name of the cookie is `session`.
+AOC_SESSION="YOUR_SESSION_COOKIE_HERE"
+AOC_YEAR=2025
+
+```
+
+or to your environment variables:
 
 ```bash
 export AOC_SESSION="..."
 ```
 
 > [!NOTE]
-> Setting AOC_SESSION will allow you to get your personal puzzle output (`aoc.get_input()`) and submit your answers with `aoc.submit_p1()` and `aoc.submit_p2()`.
+> You can find the session cookie by going to adventofcode.com in your browser, make sure you are logged in, open the development tools in your browser and navigating to Application - Storage - Cookies and find the value for the cookie named `session`.
 
 ### Benchmarks
 
@@ -94,7 +113,7 @@ You can benchmark your solutions with
 uv run adventofcode benchmark
 ```
 
-This run each day and parse the timing results from the output. It will print the results in the console and in your README.
+This will run each day and parse the timing results from the output. It will print the results in the console and in your README.md.
 
 Example README:
 
@@ -133,7 +152,7 @@ Legend:
  * 🔴 > 1s
 
 
-### Or build your workflow using the AoC class
+### Alternatively you can build your workflow using the AoC class
 
 ```python
 from adventofcode import AoC
@@ -150,3 +169,8 @@ aoc.print_p2() # prints the second part of the puzzle
 ...
 aoc.submit_p2('part 2 answer') # submits the answer to the second part of the puzzle
 ```
+
+
+### Happy solving 🎄
+
+Enjoy and have fun!

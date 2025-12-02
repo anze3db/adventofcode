@@ -9,12 +9,12 @@ and this project adheres to [Calendar Versioning](https://calver.org).
 
 ### Added
 
-* New `uv run adventofcode run` command that removes the need for builerplate in your solutions.
+* New `uv run adventofcode run` command that removes the need for boilerplate in your solutions.
 
 ### Fixed
 
 * Outputs are now cleaner and less verbose.
-* Generated templates with `uv run adventofcode init` now include a docstring with instructions how to run it. All the AoC class boilerplate has been removed.
+* Generated templates with `uv run adventofcode init` now include a docstring with instructions on how to run it. All the AoC class boilerplate has been removed.
 
 ## [25.3]
 

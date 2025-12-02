@@ -21,7 +21,7 @@ today_est = datetime.datetime.now(tz=est).date()
 
 AOC_YEAR = int(os.getenv("AOC_YEAR", str(today_est.year)))
 
-console = Console()
+console = Console(log_path=False)
 TEMPLATE = dedent('''\
     from adventofcode import AoC
 

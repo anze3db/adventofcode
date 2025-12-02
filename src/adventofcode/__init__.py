@@ -16,7 +16,7 @@ from rich.console import Console
 
 load_dotenv(Path(".env").absolute().as_posix())
 cache = percache.Cache(".cache", livesync=True)
-console = Console()
+console = Console(log_path=False)
 
 AOC_URL = "https://adventofcode.com"
 

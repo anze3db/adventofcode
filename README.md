@@ -4,8 +4,8 @@ Helper utilities for solving Advent of Code puzzles.
 
 * Project scaffolding with `uv run adventofcode init`
 * Assert and submit your solutions with `uv run adventofcode run`
-* Benchmark all the days with `adventofcode benchmark`
-* No copy-pasting puzzle inputs or loading input from files.
+* Benchmark all your solutions with `uv run adventofcode benchmark`
+* No copy-pasting puzzle inputs or loading inputs from files.
 * Submit the answer immediately when your code returns the result 🏅
 
 ## Usage
@@ -42,7 +42,7 @@ This will generate the scripts for each day:
 1 directory, 16 files
 ```
 
-All the py files look like this:
+All the generated Python files look like this:
 
 ```python
 """🎄 Solution for Day 1 of Advent of Code 2025 🎄
@@ -78,9 +78,9 @@ uv run adventofcode run
 
 This will:
 
-* Run your `part1` function with inputs provided in `part1_asserts` iterable and compare them with provided values (if function return doesn't match the expect answer the command will stop).
-* If all the `part1_asserts` passed the `part1` will be called with your puzzle input fetched from adventofcode.com using your session cookie. Each puzzle usually contain example input and expected answer. These make for great asserts!
-* If `part1` returns a non-None value for your puzzle input, that value will be submitted to adventofcode.com as your part 1 answer again using your session cookie. All your answer submissions are cached and each unique answer will only be submitted once.
+* Run your `part1` function with the inputs provided in the `part1_asserts` iterable and compare them with the expected values. If the function's return value doesn't match the expected answer, the command will stop. *Hint*: Each puzzle usually contains example input and an expected answer—these make for great asserts!
+* If all the `part1_asserts` pass, `part1` will be called with your puzzle input fetched from adventofcode.com using your session cookie.
+* If `part1` returns a non-None value for your puzzle input, that value will be submitted to adventofcode.com as your part 1 answer using your session cookie. All answer submissions are cached, so each unique answer will only be submitted once.
 * If your answer was correct the same process repeats for `part2`.
 
 ### Set your session cookie
@@ -103,7 +103,7 @@ export AOC_SESSION="..."
 ```
 
 > [!NOTE]
-> You can find the session cookie by going to adventofcode.com in your browser, make sure you are logged in, open the development tools in your browser and navigating to Application - Storage - Cookies and find the value for the cookie named `session`.
+> You can find the session cookie by going to adventofcode.com in your browser. Make sure you are logged in, then open your browser's developer tools and navigate to Application → Storage → Cookies. Look for the cookie named `session` and copy its value.
 
 ### Benchmarks
 
@@ -113,7 +113,7 @@ You can benchmark your solutions with
 uv run adventofcode benchmark
 ```
 
-This will run each day and parse the timing results from the output. It will print the results in the console and in your README.md.
+This will run each day's solution and parse the timing results from the output. The results will be printed to the console as well as added to your README.md.
 
 Example README:
 
@@ -152,7 +152,7 @@ Legend:
  * 🔴 > 1s
 
 
-### Alternatively you can build your workflow using the AoC class
+### Alternatively, you can build your own workflow using the lower level AoC class
 
 ```python
 from adventofcode import AoC

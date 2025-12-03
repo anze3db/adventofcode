@@ -319,7 +319,7 @@ def benchmark(directory: Path) -> None:
     console.log("[bold]Running benchmarks for Advent of Code[/bold]\n")
 
     # Find all day files
-    day_files = sorted(directory.glob("[0-9][0-9].py"))
+    day_files = sorted(directory.glob("[0-9][0-9]*.py"))
     if not day_files:
         console.log("[yellow]No day files found[/yellow]")
         return
@@ -388,7 +388,12 @@ def run(filepath: Path) -> None:
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
 
-    aoc = AoC(part_1=module.part1, part_2=module.part2, day=int(filepath.stem), year=AOC_YEAR)
+    aoc = AoC(
+        part_1=module.part1,
+        part_2=module.part2,
+        day=int(re.sub(r"[^0-9]", "", filepath.stem)),
+        year=AOC_YEAR,
+    )
     if hasattr(module, "part1_asserts"):
         for test_input, expected in module.part1_asserts:
             aoc.assert_p1(test_input, expected)

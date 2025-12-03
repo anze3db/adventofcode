@@ -6,6 +6,7 @@ import time
 from collections.abc import Callable
 from contextlib import contextmanager
 from pathlib import Path
+from timeit import Timer
 from typing import Any
 
 import percache
@@ -128,6 +129,18 @@ class AoC:
             answer = self.part_2(inp)
             perf.value = answer
         submit(year=self.year, day=self.day, level=2, answer=answer)
+
+    def submit_p1_benchmark(self):
+        inp = self.get_input()
+        num_loops, total_time = Timer(lambda: self.part_1(inp)).autorange()
+        console.log(f"{format_time(total_time / num_loops)} to {PART_1_RETURN_STR}")
+        submit(year=self.year, day=self.day, level=1, answer=self.part_1(inp))
+
+    def submit_p2_benchmark(self):
+        inp = self.get_input()
+        num_loops, total_time = Timer(lambda: self.part_2(inp)).autorange()
+        console.log(f"{format_time(total_time / num_loops)} to {PART_2_RETURN_STR}")
+        submit(year=self.year, day=self.day, level=2, answer=self.part_2(inp))
 
 
 @cache

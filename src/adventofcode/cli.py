@@ -155,7 +155,7 @@ def run_day(filepath: Path) -> DayResult:
     result = DayResult(day=filepath.stem)
 
     if "adventofcode run" in filepath.read_text():
-        command = ["adventofcode", "run", str(filepath)]
+        command = ["adventofcode", "run", str(filepath), "--benchmark"]
     else:
         command = [sys.executable, str(filepath)]
     try:
@@ -374,7 +374,7 @@ def benchmark(directory: Path) -> None:
     update_readme(readme_path, results_table)
 
 
-def run(filepath: Path) -> None:
+def run(filepath: Path, benchmark: bool = False) -> None:  # noqa: FBT001, FBT002
     # Import the python module on path
     if not filepath.exists():
         console.log(f"[red]File {filepath} does not exist[/red]")
@@ -400,14 +400,20 @@ def run(filepath: Path) -> None:
     else:
         console.log("[yellow]No part 1 assertions found[/yellow]\n")
 
-    aoc.submit_p1()
+    if benchmark:
+        aoc.submit_p1_benchmark()
+    else:
+        aoc.submit_p1()
     if hasattr(module, "part2_asserts"):
         for test_input, expected in module.part2_asserts:
             aoc.assert_p2(test_input, expected)
     else:
         console.log("[yellow]No part 2 assertions found[/yellow]\n")
 
-    aoc.submit_p2()
+    if benchmark:
+        aoc.submit_p2_benchmark()
+    else:
+        aoc.submit_p2()
 
 
 def main() -> None:
@@ -492,6 +498,13 @@ def main() -> None:
             """),
     )
     run_parser.add_argument(
+        "-b",
+        "--benchmark",
+        action="store_true",
+        help="Benchmark each part with Time.autorange()",
+        default=False,
+    )
+    run_parser.add_argument(
         "filepath",
         type=Path,
         help="Path to the day file to run (e.g., 01.py)",
@@ -505,7 +518,7 @@ def main() -> None:
         case "benchmark":
             benchmark(args.directory)
         case "run":
-            run(args.filepath)
+            run(args.filepath, benchmark=args.benchmark)
         case _:
             parser.print_help()
 

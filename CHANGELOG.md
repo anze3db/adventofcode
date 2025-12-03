@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Calendar Versioning](https://calver.org).
 
+## [25.8]
+
+### Added
+
+* Ability to benchmark different solution for one day. Requested by @rodrigogiraoserrao ❤️
+* More stable benchmarking (using [Timer.autorange](https://docs.python.org/3/library/timeit.html#timeit.Timer.autorange))
+
+### Fixed
+
+* Improved the README.md template
 
 ## [25.7]
 

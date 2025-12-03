@@ -237,7 +237,20 @@ def update_readme(readme_path: Path, results_table: str) -> None:
 
     if not readme_path.exists():
         # Create a new README with results
-        content = f"# Advent of Code\n\n## Benchmark Results\n\n{marker_start}\n{results_table}\n{marker_end}\n"
+        content = dedent("""\
+            # Advent of Code {AOC_YEAR} 🎄
+
+            ## Solution Benchmarks
+
+            {marker_start}
+            {results_table}
+            {marker_end}
+            """).format(
+            AOC_YEAR=AOC_YEAR,
+            marker_start=marker_start,
+            marker_end=marker_end,
+            results_table=results_table,
+        )
         readme_path.write_text(content)
         console.log(f"Created {readme_path} with benchmark results")
         return
@@ -275,7 +288,7 @@ def markdown_color(formatted_time: str, color: Color) -> str:
 def build_console_table(
     results: list[DayResult], current_running: str | None, total_part_1: float, total_part_2: float, total_time: float
 ) -> Table:
-    table = Table(title="Advent of Code Benchmarks")
+    table = Table(title=f"Advent of Code {AOC_YEAR} Benchmark")
     table.add_column("Day", style="cyan", justify="right")
     table.add_column("Status", justify="center")
     table.add_column("Part 1", justify="right")

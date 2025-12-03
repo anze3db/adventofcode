@@ -237,11 +237,11 @@ def get_result_row(table: str, pattern: str) -> str | None:
 
 
 def get_time_diff(old_day_row: str, new_day_row: str) -> list[float]:
-    pattern = r'(\d+\.\d+)(ms|s)'
+    pattern = r"(\d+\.\d+)(ms|s)"
 
     def parse_time(match: tuple[str, str]) -> float:
         val = float(match[0])
-        return val * 1000 if match[1] == 's' else val
+        return val * 1000 if match[1] == "s" else val
 
     matches_old = re.findall(pattern, old_day_row)
     matches_new = re.findall(pattern, new_day_row)
@@ -290,7 +290,7 @@ def update_readme(readme_path: Path, results_table: str, day: int | None = None)
         else:
             # substitute the old day row with the new day row
             day_str = get_day_str(day)
-            day_row_pattern = rf'^(\|\s*{day_str}\s*\|).*?(\n)'
+            day_row_pattern = rf"^(\|\s*{day_str}\s*\|).*?(\n)"
             old_day_row = get_result_row(content, day_row_pattern)
             if old_day_row is None:
                 console.log(f"[red]Could not extract existing row for day {day_str} in README[/red]")
@@ -302,10 +302,10 @@ def update_readme(readme_path: Path, results_table: str, day: int | None = None)
             content = re.sub(day_row_pattern, new_day_row, content, flags=re.MULTILINE)
 
             # substitute the total day row with new time
-            totals_pattern = rf'^(\|\s*\*\*Total\*\*\s*\|).*?(\n)'
+            totals_pattern = rf"^(\|\s*\*\*Total\*\*\s*\|).*?(\n)"
             old_totals = re.search(totals_pattern, content, flags=re.MULTILINE)
 
-            time_pattern = r'(\d+\.\d+)(ms|s)'
+            time_pattern = r"(\d+\.\d+)(ms|s)"
             matches = re.findall(time_pattern, old_totals.group(0)) if old_totals else []
 
             if len(matches) < 3:
@@ -314,7 +314,7 @@ def update_readme(readme_path: Path, results_table: str, day: int | None = None)
 
             def parse_to_ms(val_str: str, unit_str: str) -> float:
                 val = float(val_str)
-                return val * 1000 if unit_str == 's' else val
+                return val * 1000 if unit_str == "s" else val
 
             current_p1_ms = parse_to_ms(matches[0][0], matches[0][1])
             current_p2_ms = parse_to_ms(matches[1][0], matches[1][1])

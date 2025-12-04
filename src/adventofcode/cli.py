@@ -258,7 +258,7 @@ def get_time_diff(old_day_row: str, new_day_row: str) -> list[float]:
     return [0.0, 0.0]
 
 
-def update_readme(readme_path: Path, results_table: str, day: int | None = None) -> None:
+def update_readme(readme_path: Path, results_table: str, path: Path) -> None:
     """Update the README.md with benchmark results."""
     marker_start = "<!-- BENCHMARK_RESULTS_START -->"
     marker_end = "<!-- BENCHMARK_RESULTS_END -->"
@@ -284,22 +284,24 @@ def update_readme(readme_path: Path, results_table: str, day: int | None = None)
 
     content = readme_path.read_text()
     if marker_start in content and marker_end in content:
-        if day is None:
+        if path.is_dir():
             # Replace entire existing results table
             pattern = re.compile(re.escape(marker_start) + r".*?" + re.escape(marker_end), re.DOTALL)
             new_section = f"{marker_start}\n{results_table}\n{marker_end}"
             content = pattern.sub(new_section, content)
         else:
+            # strip .py from path
+            path = path.stem
+
             # substitute the old day row with the new day row
-            day_str = get_day_str(day)
-            day_row_pattern = rf"^(\|\s*{day_str}\s*\|).*?(\n)"
+            day_row_pattern = rf"^(\|\s*{path}\s*\|).*?(\n)"
             old_day_row = get_result_row(content, day_row_pattern)
             if old_day_row is None:
-                console.log(f"[red]Could not extract existing row for day {day_str} in README[/red]")
+                console.log(f"[red]Could not extract existing row for path {path} in README[/red]")
                 return
             new_day_row = get_result_row(results_table, day_row_pattern)
             if new_day_row is None:
-                console.log(f"[red]Could not find new row for day {day_str} in results table[/red]")
+                console.log(f"[red]Could not find new row for path {path} in results table[/red]")
                 return
             content = re.sub(day_row_pattern, new_day_row, content, flags=re.MULTILINE)
 
@@ -395,14 +397,12 @@ def get_day_str(day: int) -> str:
     return str(day) if day > 9 else f"0{day}"
 
 
-def benchmark(directory: Path, day: int | None = None) -> None:
+def benchmark(path: Path) -> None:
     console.log("[bold]Running benchmarks for Advent of Code[/bold]\n")
-
-    # Find all day files if day argument is not passed
-    if day is None:
-        day_files = sorted(directory.glob("[0-9][0-9]*.py"))
+    if path.is_dir():
+        day_files = sorted(path.glob("[0-9][0-9]*.py"))
     else:
-        day_files = directory.glob(f"{get_day_str(day)}*.py")
+        day_files = [Path(path)] if path.exists() else []
     if not day_files:
         console.log("[yellow]No day files found[/yellow]")
         return
@@ -450,11 +450,14 @@ def benchmark(directory: Path, day: int | None = None) -> None:
                 )
             )
 
-    readme_path = directory / "README.md"
+    if path.is_dir():
+        readme_path = path / "README.md"
+    else:
+        readme_path = path.parent / "README.md"
     results_table = build_markdown_table(
         results, total_time=total_time, total_part_1=total_part_1, total_part_2=total_part_2
     )
-    update_readme(readme_path, results_table, day)
+    update_readme(readme_path, results_table, path)
 
 
 def run(filepath: Path, benchmark: bool = False) -> None:  # noqa: FBT001, FBT002
@@ -568,19 +571,11 @@ def main() -> None:
             """),
     )
     benchmark_parser.add_argument(
-        "-d",
-        "--directory",
+        "path",
         type=Path,
         nargs="?",
         default=Path("."),
-        help="Directory containing day files (default: current directory)",
-    )
-    benchmark_parser.add_argument(
-        "day",
-        type=int,
-        nargs="?",
-        default=None,
-        help="Integer value of the day for which to run benchmark (default: all)",
+        help="Path where benchmarked file(s) are located (default: current directory)",
     )
 
     # Run Command
@@ -613,7 +608,7 @@ def main() -> None:
         case "init":
             init_templates(args.year, args.directory, 12 if args.year >= 2025 else 25)
         case "benchmark":
-            benchmark(args.directory, args.day)
+            benchmark(args.path)
         case "run":
             run(args.filepath, benchmark=args.benchmark)
         case _:

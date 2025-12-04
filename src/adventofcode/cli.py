@@ -253,7 +253,9 @@ def get_time_diff(old_day_row: str, new_day_row: str) -> list[float]:
         part_1_time_new = parse_time(matches_new[0])
         part_2_time_new = parse_time(matches_new[1])
         return [part_1_time_new - part_1_time_old, part_2_time_new - part_2_time_old]
-    return [parse_time(matches_new[0]), parse_time(matches_new[1])]
+    if len(matches_new) >= 2:
+        return [parse_time(matches_new[0]), parse_time(matches_new[1])]
+    return [0.0, 0.0]
 
 
 def update_readme(readme_path: Path, results_table: str, day: int | None = None) -> None:

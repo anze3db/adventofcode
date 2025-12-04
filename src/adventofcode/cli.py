@@ -148,7 +148,8 @@ def time_to_color(seconds: float) -> Color:
 
 
 def run_day(filepath: Path) -> DayResult:
-    day_num = int(re.sub(r"[^0-9]", "", filepath.stem))
+    match = re.match(r"(\d\d)", filepath.stem)
+    day_num = int(match.group(1)) if match else 0
     if datetime.date(AOC_YEAR, 12, day_num) > today_est:
         return DayResult(day=filepath.stem, status="🕑")
 
@@ -388,10 +389,15 @@ def run(filepath: Path, benchmark: bool = False) -> None:  # noqa: FBT001, FBT00
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
 
+    # Match the first two digits and use them as the day number
+    # Assuming the files are named like 01.py, 02-alternative.py, 02-alternative2.py, etc.
+    match = re.match(r"(\d\d)", filepath.stem)
+    if not match:
+        return
     aoc = AoC(
         part_1=module.part1,
         part_2=module.part2,
-        day=int(re.sub(r"[^0-9]", "", filepath.stem)),
+        day=int(match.group(1)),
         year=AOC_YEAR,
     )
     if hasattr(module, "part1_asserts"):

@@ -291,29 +291,29 @@ def update_readme(readme_path: Path, results_table: str, path: Path) -> None:
             content = pattern.sub(new_section, content)
         else:
             # strip .py from path
-            path = path.stem
+            stem = path.stem
 
             # substitute the old day row with the new day row
-            day_row_pattern = rf"^(\|\s*{path}\s*\|).*?(\n)"
+            day_row_pattern = rf"^(\|\s*{stem}\s*\|).*?(\n)"
             old_day_row = get_result_row(content, day_row_pattern)
             if old_day_row is None:
-                console.log(f"[red]Could not extract existing row for path {path} in README[/red]")
+                console.log(f"[red]Could not extract existing row for path {stem} in README[/red]")
                 return
             new_day_row = get_result_row(results_table, day_row_pattern)
             if new_day_row is None:
-                console.log(f"[red]Could not find new row for path {path} in results table[/red]")
+                console.log(f"[red]Could not find new row for path {stem} in results table[/red]")
                 return
             content = re.sub(day_row_pattern, new_day_row, content, flags=re.MULTILINE)
 
             # substitute the total day row with new time
-            totals_pattern = rf"^(\|\s*\*\*Total\*\*\s*\|).*?(\n)"
+            totals_pattern = r"^(\|\s*\*\*Total\*\*\s*\|).*?(\n)"
             old_totals = re.search(totals_pattern, content, flags=re.MULTILINE)
 
             time_pattern = r"(\d+\.\d+)(ms|s)"
             matches = re.findall(time_pattern, old_totals.group(0)) if old_totals else []
 
             if len(matches) < 3:
-                console.log(f"[red]Could not extract existing totals in README[/red]")
+                console.log("[red]Could not extract existing totals in README[/red]")
                 return
 
             def parse_to_ms(val_str: str, unit_str: str) -> float:
@@ -391,10 +391,6 @@ def build_console_table(
         console_color(format_time(total_time), time_to_color(total_time)),
     )
     return table
-
-
-def get_day_str(day: int) -> str:
-    return str(day) if day > 9 else f"0{day}"
 
 
 def benchmark(path: Path) -> None:

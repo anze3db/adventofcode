@@ -92,7 +92,8 @@ def init_templates(year: int, output_dir: Path, num_days: int) -> None:
             "# You can find it in your browser's developer tools after logging in to adventofcode.com.  \n"
             "# The name of the cookie is `session`.\n"
             'AOC_SESSION=""\n'
-            f"AOC_YEAR={year}\n"
+            f"AOC_YEAR={year}\n",
+            encoding="utf-8",
         )
         console.log("Created .env file (remember to set your AOC_SESSION)")
 

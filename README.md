@@ -134,17 +134,13 @@ uv run adventofcode benchmark
 
 This will run each day's solution and parse the timing results from the output. The results will be printed to the console as well as added to your README.md.
 
-You can also benchmark a single day's solution with
+If you are in a hurry you can also benchmark a single day's solution with
 
 ```shell
-uv run adventofcode benchmark <day>
+uv run adventofcode benchmark 05.py
 ```
 
-where `day` is the integer value of the day for which to run benchmark.
-
 Example console output:
-
-
 
 Example README:
 

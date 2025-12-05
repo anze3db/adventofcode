@@ -231,11 +231,37 @@ def build_markdown_table(results: list[DayResult], total_time: float, total_part
     return "\n".join(lines)
 
 
-def update_readme(readme_path: Path, results_table: str) -> None:
+def get_result_row(table: str, pattern: str) -> str | None:
+    table_match = re.search(pattern, table, flags=re.MULTILINE)
+    return None if table_match is None else table_match.group(0)
+
+
+def get_time_diff(old_day_row: str, new_day_row: str) -> list[float]:
+    pattern = r"(\d+\.\d+)(ms|s)"
+
+    def parse_time(match: tuple[str, str]) -> float:
+        val = float(match[0])
+        return val * 1000 if match[1] == "s" else val
+
+    matches_old = re.findall(pattern, old_day_row)
+    matches_new = re.findall(pattern, new_day_row)
+
+    if len(matches_old) >= 2 and len(matches_new) >= 2:
+        part_1_time_old = parse_time(matches_old[0])
+        part_2_time_old = parse_time(matches_old[1])
+
+        part_1_time_new = parse_time(matches_new[0])
+        part_2_time_new = parse_time(matches_new[1])
+        return [part_1_time_new - part_1_time_old, part_2_time_new - part_2_time_old]
+    if len(matches_new) >= 2:
+        return [parse_time(matches_new[0]), parse_time(matches_new[1])]
+    return [0.0, 0.0]
+
+
+def update_readme(readme_path: Path, results_table: str, path: Path) -> None:
     """Update the README.md with benchmark results."""
     marker_start = "<!-- BENCHMARK_RESULTS_START -->"
     marker_end = "<!-- BENCHMARK_RESULTS_END -->"
-
     if not readme_path.exists():
         # Create a new README with results
         content = dedent("""\
@@ -257,12 +283,63 @@ def update_readme(readme_path: Path, results_table: str) -> None:
         return
 
     content = readme_path.read_text()
-
     if marker_start in content and marker_end in content:
-        # Replace existing results
-        pattern = re.compile(re.escape(marker_start) + r".*?" + re.escape(marker_end), re.DOTALL)
-        new_section = f"{marker_start}\n{results_table}\n{marker_end}"
-        content = pattern.sub(new_section, content)
+        if path.is_dir():
+            # Replace entire existing results table
+            pattern = re.compile(re.escape(marker_start) + r".*?" + re.escape(marker_end), re.DOTALL)
+            new_section = f"{marker_start}\n{results_table}\n{marker_end}"
+            content = pattern.sub(new_section, content)
+        else:
+            # strip .py from path
+            stem = path.stem
+
+            # substitute the old day row with the new day row
+            day_row_pattern = rf"^(\|\s*{stem}\s*\|).*?(\n)"
+            old_day_row = get_result_row(content, day_row_pattern)
+            if old_day_row is None:
+                console.log(f"[red]Could not extract existing row for path {stem} in README[/red]")
+                return
+            new_day_row = get_result_row(results_table, day_row_pattern)
+            if new_day_row is None:
+                console.log(f"[red]Could not find new row for path {stem} in results table[/red]")
+                return
+            content = re.sub(day_row_pattern, new_day_row, content, flags=re.MULTILINE)
+
+            # substitute the total day row with new time
+            totals_pattern = r"^(\|\s*\*\*Total\*\*\s*\|).*?(\n)"
+            old_totals = re.search(totals_pattern, content, flags=re.MULTILINE)
+
+            time_pattern = r"(\d+\.\d+)(ms|s)"
+            matches = re.findall(time_pattern, old_totals.group(0)) if old_totals else []
+
+            if len(matches) < 3:
+                console.log("[red]Could not extract existing totals in README[/red]")
+                return
+
+            def parse_to_ms(val_str: str, unit_str: str) -> float:
+                val = float(val_str)
+                return val * 1000 if unit_str == "s" else val
+
+            current_p1_ms = parse_to_ms(matches[0][0], matches[0][1])
+            current_p2_ms = parse_to_ms(matches[1][0], matches[1][1])
+            current_total_ms = parse_to_ms(matches[2][0], matches[2][1])
+
+            [part_1_diff_ms, part_2_diff_ms] = get_time_diff(old_day_row, new_day_row)
+
+            new_p1_ms = current_p1_ms + part_1_diff_ms
+            new_p2_ms = current_p2_ms + part_2_diff_ms
+            new_total_ms = current_total_ms + part_1_diff_ms + part_2_diff_ms
+
+            p1_seconds = new_p1_ms / 1000.0
+            p2_seconds = new_p2_ms / 1000.0
+            total_seconds = new_total_ms / 1000.0
+
+            p1_str = markdown_color(format_time(p1_seconds), time_to_color(p1_seconds))
+            p2_str = markdown_color(format_time(p2_seconds), time_to_color(p2_seconds))
+            total_str = markdown_color(format_time(total_seconds), time_to_color(total_seconds))
+
+            new_totals = f"| **Total** | | {p1_str} | {p2_str} | {total_str} |\n"
+            content = re.sub(totals_pattern, new_totals, content, flags=re.MULTILINE)
     else:
         # Append results section
         content += f"\n## Benchmark Results\n\n{marker_start}\n{results_table}\n{marker_end}\n"
@@ -316,11 +393,12 @@ def build_console_table(
     return table
 
 
-def benchmark(directory: Path) -> None:
+def benchmark(path: Path) -> None:
     console.log("[bold]Running benchmarks for Advent of Code[/bold]\n")
-
-    # Find all day files
-    day_files = sorted(directory.glob("[0-9][0-9]*.py"))
+    if path.is_dir():
+        day_files = sorted(path.glob("[0-9][0-9]*.py"))
+    else:
+        day_files = [Path(path)] if path.exists() else []
     if not day_files:
         console.log("[yellow]No day files found[/yellow]")
         return
@@ -368,11 +446,14 @@ def benchmark(directory: Path) -> None:
                 )
             )
 
-    readme_path = directory / "README.md"
+    if path.is_dir():
+        readme_path = path / "README.md"
+    else:
+        readme_path = path.parent / "README.md"
     results_table = build_markdown_table(
         results, total_time=total_time, total_part_1=total_part_1, total_part_2=total_part_2
     )
-    update_readme(readme_path, results_table)
+    update_readme(readme_path, results_table, path)
 
 
 def run(filepath: Path, benchmark: bool = False) -> None:  # noqa: FBT001, FBT002
@@ -469,8 +550,9 @@ def main() -> None:
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=dedent("""\
             Examples:
-                adventofcode benchmark               # Run benchmarks in current directory
-                adventofcode benchmark ./2024        # Run benchmarks in the ./2024 directory
+                adventofcode benchmark                  # Run benchmarks in current directory
+                adventofcode benchmark -d ./2024        # Run benchmarks in the ./2024 directory
+                adventofcode benchmark -d ./2024 2      # Run benchmarks in the ./2024 directory for day 2 only
 
             The benchmark will:
             1. Find all day files (01.py, 02.py, etc.)
@@ -485,11 +567,11 @@ def main() -> None:
             """),
     )
     benchmark_parser.add_argument(
-        "directory",
+        "path",
         type=Path,
         nargs="?",
         default=Path("."),
-        help="Directory containing day files (default: current directory)",
+        help="Path where benchmarked file(s) are located (default: current directory)",
     )
 
     # Run Command
@@ -522,7 +604,7 @@ def main() -> None:
         case "init":
             init_templates(args.year, args.directory, 12 if args.year >= 2025 else 25)
         case "benchmark":
-            benchmark(args.directory)
+            benchmark(args.path)
         case "run":
             run(args.filepath, benchmark=args.benchmark)
         case _:

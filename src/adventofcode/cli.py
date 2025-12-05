@@ -66,7 +66,7 @@ def init_templates(year: int, output_dir: Path, num_days: int) -> None:
             console.log(f"Skipping {filename} (already exists)")
             continue
 
-        filepath.write_text(TEMPLATE.format(day=day, year=year))
+        filepath.write_text(TEMPLATE.format(day=day, year=year), encoding="utf-8")
         console.log(f"Created {filename}")
 
     gitignore_path = output_dir / ".gitignore"
@@ -278,7 +278,7 @@ def update_readme(readme_path: Path, results_table: str, path: Path) -> None:
             marker_end=marker_end,
             results_table=results_table,
         )
-        readme_path.write_text(content)
+        readme_path.write_text(content, encoding="utf-8")
         console.log(f"Created {readme_path} with benchmark results")
         return
 
@@ -344,7 +344,7 @@ def update_readme(readme_path: Path, results_table: str, path: Path) -> None:
         # Append results section
         content += f"\n## Benchmark Results\n\n{marker_start}\n{results_table}\n{marker_end}\n"
 
-    readme_path.write_text(content)
+    readme_path.write_text(content, encoding="utf-8")
     console.log(f"Updated {readme_path} with benchmark results")
 
 

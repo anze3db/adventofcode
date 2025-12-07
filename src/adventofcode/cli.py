@@ -129,6 +129,8 @@ Color = Literal["green", "yellow", "red", "white"]
 @dataclass
 class DayResult:
     day: str
+    day_num: str = ""
+    variant: str = ""
     part1_time: float = 0.0
     part2_time: float = 0.0
     total_time: float = 0.0
@@ -149,13 +151,30 @@ def time_to_color(seconds: float) -> Color:
         return "red"
 
 
+def split_day_name(day_name: str) -> tuple[str, str]:
+    """Split a day name into (day_number, variant).
+
+    Examples:
+        '01' -> ('01', '')
+        '01-alt' -> ('01', 'alt')
+        '03-numpy' -> ('03', 'numpy')
+    """
+    match = re.match(r"(\d\d)(?:-(.+))?", day_name)
+    if match:
+        day_num = match.group(1)
+        variant = match.group(2) or ""
+        return day_num, variant
+    return day_name, ""
+
+
 def run_day(filepath: Path) -> DayResult:
     match = re.match(r"(\d\d)", filepath.stem)
     day_num = int(match.group(1)) if match else 0
+    day_num_str, variant = split_day_name(filepath.stem)
     if datetime.date(AOC_YEAR, 12, day_num) > today_est:
-        return DayResult(day=filepath.stem, status="🕑")
+        return DayResult(day=filepath.stem, day_num=day_num_str, variant=variant, status="🕑")
 
-    result = DayResult(day=filepath.stem)
+    result = DayResult(day=filepath.stem, day_num=day_num_str, variant=variant)
 
     if "adventofcode run" in filepath.read_text():
         command = ["adventofcode", "run", str(filepath), "--benchmark"]
@@ -208,29 +227,47 @@ def run_day(filepath: Path) -> DayResult:
 
 def build_markdown_table(results: list[DayResult], total_time: float, total_part_1: float, total_part_2: float) -> str:
     """Generate a markdown table from benchmark results."""
-    lines = [
-        "| Day | Status | Part 1 Time | Part 2 Time | Total Time | ",
-        "|:---:|:------:|------------:|------------:|-----------:| ",
-    ]
+    # Check if any result has a variant
+    has_variants = any(r.variant for r in results)
+
+    if has_variants:
+        lines = [
+            "| Day | Variant | Status | Part 1 Time | Part 2 Time | Total Time | ",
+            "|----:|:--------|:------:|------------:|------------:|-----------:| ",
+        ]
+    else:
+        lines = [
+            "| Day | Status | Part 1 Time | Part 2 Time | Total Time | ",
+            "|----:|:------:|------------:|------------:|-----------:| ",
+        ]
 
     for r in results:
         if not r.in_total and r.total_time > 0:
             p1_time = f"{format_time(r.part1_time)} ⚪"
             p2_time = f"{format_time(r.part2_time)} ⚪"
             total = f"{format_time(r.total_time)} ⚪"
-            day_display = f"~~{r.day}~~"
+            day_display = f"~~{r.day_num}~~"
+            variant_display = f"~~{r.variant}~~" if r.variant else ""
         else:
             p1_time = markdown_color(format_time(r.part1_time), time_to_color(r.part1_time))
             p2_time = markdown_color(format_time(r.part2_time), time_to_color(r.part2_time))
             total = markdown_color(format_time(r.total_time), time_to_color(r.total_time))
-            day_display = r.day
-        lines.append(f"| {day_display} | {r.status} | {p1_time} | {p2_time} | {total} |")
+            day_display = r.day_num
+            variant_display = r.variant
+
+        if has_variants:
+            lines.append(f"| {day_display} | {variant_display} | {r.status} | {p1_time} | {p2_time} | {total} |")
+        else:
+            lines.append(f"| {day_display} | {r.status} | {p1_time} | {p2_time} | {total} |")
 
     p1_total = markdown_color(format_time(total_part_1), time_to_color(total_part_1))
     p2_total = markdown_color(format_time(total_part_2), time_to_color(total_part_2))
     total = markdown_color(format_time(total_time), time_to_color(total_time))
     # Add total row
-    lines.append(f"| **Total** | | {p1_total} | {p2_total} | {total} |")
+    if has_variants:
+        lines.append(f"| **Total** | | | {p1_total} | {p2_total} | {total} |")
+    else:
+        lines.append(f"| **Total** | | {p1_total} | {p2_total} | {total} |")
     lines.append("")
     lines.append("Legend:")
     lines.append(" * 🟢 < 100ms")
@@ -375,8 +412,18 @@ def markdown_color(formatted_time: str, color: Color) -> str:
 def build_console_table(
     results: list[DayResult], current_running: str | None, total_part_1: float, total_part_2: float, total_time: float
 ) -> Table:
+    # Check if any result has a variant
+    has_variants = any(r.variant for r in results)
+    # Also check if current_running has a variant
+    if current_running:
+        _, current_variant = split_day_name(current_running)
+        if current_variant:
+            has_variants = True
+
     table = Table(title=f"Advent of Code {AOC_YEAR} Benchmark")
     table.add_column("Day", style="cyan", justify="right")
+    if has_variants:
+        table.add_column("Variant", style="cyan", justify="left")
     table.add_column("Status", justify="center")
     table.add_column("Part 1", justify="right")
     table.add_column("Part 2", justify="right")
@@ -388,26 +435,52 @@ def build_console_table(
         total = console_color(format_time(r.total_time), time_to_color(r.total_time))
         status = r.status
         if not r.in_total and r.total_time > 0:
-            table.add_row(
-                f"[dim strike]{r.day}[/dim strike]",
-                f"[dim]{status}[/dim]",
-                f"[dim]{format_time(r.part1_time)}[/dim]",
-                f"[dim]{format_time(r.part2_time)}[/dim]",
-                f"[dim]{format_time(r.total_time)}[/dim]",
-            )
+            if has_variants:
+                table.add_row(
+                    f"[dim strike]{r.day_num}[/dim strike]",
+                    f"[dim strike]{r.variant}[/dim strike]",
+                    f"[dim]{status}[/dim]",
+                    f"[dim]{format_time(r.part1_time)}[/dim]",
+                    f"[dim]{format_time(r.part2_time)}[/dim]",
+                    f"[dim]{format_time(r.total_time)}[/dim]",
+                )
+            else:
+                table.add_row(
+                    f"[dim strike]{r.day_num}[/dim strike]",
+                    f"[dim]{status}[/dim]",
+                    f"[dim]{format_time(r.part1_time)}[/dim]",
+                    f"[dim]{format_time(r.part2_time)}[/dim]",
+                    f"[dim]{format_time(r.total_time)}[/dim]",
+                )
+        elif has_variants:
+            table.add_row(r.day_num, r.variant, status, p1_time, p2_time, total)
         else:
-            table.add_row(r.day, status, p1_time, p2_time, total)
+            table.add_row(r.day_num, status, p1_time, p2_time, total)
 
     if current_running is not None:
-        table.add_row(str(current_running), "⏳", "...", "...", "...")
+        day_num, variant = split_day_name(current_running)
+        if has_variants:
+            table.add_row(day_num, variant, "⏳", "...", "...", "...")
+        else:
+            table.add_row(day_num, "⏳", "...", "...", "...")
 
-    table.add_row(
-        "Total",
-        "",
-        console_color(format_time(total_part_1), time_to_color(total_part_1)),
-        console_color(format_time(total_part_2), time_to_color(total_part_2)),
-        console_color(format_time(total_time), time_to_color(total_time)),
-    )
+    if has_variants:
+        table.add_row(
+            "Total",
+            "",
+            "",
+            console_color(format_time(total_part_1), time_to_color(total_part_1)),
+            console_color(format_time(total_part_2), time_to_color(total_part_2)),
+            console_color(format_time(total_time), time_to_color(total_time)),
+        )
+    else:
+        table.add_row(
+            "Total",
+            "",
+            console_color(format_time(total_part_1), time_to_color(total_part_1)),
+            console_color(format_time(total_part_2), time_to_color(total_part_2)),
+            console_color(format_time(total_time), time_to_color(total_time)),
+        )
     return table
 
 

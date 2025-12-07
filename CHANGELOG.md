@@ -5,6 +5,35 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Calendar Versioning](https://calver.org).
 
+## [25.10]
+
+### Added
+
+* When you have alternative solutions only the fastest one is now counted in the totals row and the display in the table was improved:
+
+| Day | Variant | Status | Part 1 Time | Part 2 Time | Total Time |
+|----:|:--------|:------:|------------:|------------:|-----------:|
+| 01 |  | ✅ | 0.54ms 🟢 | 0.63ms 🟢 | 1.17ms 🟢 |
+| 02 |  | ✅ | 0.08ms 🟢 | 0.13ms 🟢 | 0.21ms 🟢 |
+| 03 |  | ✅ | 0.38ms 🟢 | 0.98ms 🟢 | 1.36ms 🟢 |
+| 04 | numpy | ✅ | 0.80ms 🟢 | 4.48ms 🟢 | 5.28ms 🟢 |
+| ~~04~~ |  | ✅ | 5.87ms ⚪ | 14.37ms ⚪ | 20.24ms ⚪ |
+| 05 |  | ✅ | 0.28ms 🟢 | 0.09ms 🟢 | 0.37ms 🟢 |
+| 06 |  | ✅ | 0.79ms 🟢 | 1.25ms 🟢 | 2.04ms 🟢 |
+| 07 |  | ✅ | 1.21ms 🟢 | 1.43ms 🟢 | 2.64ms 🟢 |
+| 08 |  | 🕑 | - | - | - |
+| 09 |  | 🕑 | - | - | - |
+| 10 |  | 🕑 | - | - | - |
+| 11 |  | 🕑 | - | - | - |
+| 12 |  | 🕑 | - | - | - |
+| **Total** | | | 4.08ms 🟢 | 8.99ms 🟢 | 13.07ms 🟢 |
+
+Legend:
+ * 🟢 < 100ms
+ * 🟡 100ms - 1s
+ * 🔴 > 1s
+ * ⚪ Not included in total
+
 ## [25.9]
 
 ### Added

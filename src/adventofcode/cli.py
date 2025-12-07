@@ -135,6 +135,7 @@ class DayResult:
 
     status: str = ""
     error: str | None = None
+    in_total: bool = True
 
 
 def time_to_color(seconds: float) -> Color:
@@ -213,11 +214,17 @@ def build_markdown_table(results: list[DayResult], total_time: float, total_part
     ]
 
     for r in results:
-        p1_time = markdown_color(format_time(r.part1_time), time_to_color(r.part1_time))
-        p2_time = markdown_color(format_time(r.part2_time), time_to_color(r.part2_time))
-        total = markdown_color(format_time(r.total_time), time_to_color(r.total_time))
-
-        lines.append(f"| {r.day} | {r.status} | {p1_time} | {p2_time} | {total} |")
+        if not r.in_total and r.total_time > 0:
+            p1_time = f"{format_time(r.part1_time)} ⚪"
+            p2_time = f"{format_time(r.part2_time)} ⚪"
+            total = f"{format_time(r.total_time)} ⚪"
+            day_display = f"~~{r.day}~~"
+        else:
+            p1_time = markdown_color(format_time(r.part1_time), time_to_color(r.part1_time))
+            p2_time = markdown_color(format_time(r.part2_time), time_to_color(r.part2_time))
+            total = markdown_color(format_time(r.total_time), time_to_color(r.total_time))
+            day_display = r.day
+        lines.append(f"| {day_display} | {r.status} | {p1_time} | {p2_time} | {total} |")
 
     p1_total = markdown_color(format_time(total_part_1), time_to_color(total_part_1))
     p2_total = markdown_color(format_time(total_part_2), time_to_color(total_part_2))
@@ -229,6 +236,7 @@ def build_markdown_table(results: list[DayResult], total_time: float, total_part
     lines.append(" * 🟢 < 100ms")
     lines.append(" * 🟡 100ms - 1s")
     lines.append(" * 🔴 > 1s")
+    lines.append(" * ⚪ Not included in total")
     return "\n".join(lines)
 
 
@@ -379,7 +387,16 @@ def build_console_table(
         p2_time = console_color(format_time(r.part2_time), time_to_color(r.part2_time))
         total = console_color(format_time(r.total_time), time_to_color(r.total_time))
         status = r.status
-        table.add_row(r.day, status, p1_time, p2_time, total)
+        if not r.in_total and r.total_time > 0:
+            table.add_row(
+                f"[dim strike]{r.day}[/dim strike]",
+                f"[dim]{status}[/dim]",
+                f"[dim]{format_time(r.part1_time)}[/dim]",
+                f"[dim]{format_time(r.part2_time)}[/dim]",
+                f"[dim]{format_time(r.total_time)}[/dim]",
+            )
+        else:
+            table.add_row(r.day, status, p1_time, p2_time, total)
 
     if current_running is not None:
         table.add_row(str(current_running), "⏳", "...", "...", "...")
@@ -392,6 +409,44 @@ def build_console_table(
         console_color(format_time(total_time), time_to_color(total_time)),
     )
     return table
+
+
+def get_day_number(day_name: str) -> str:
+    """Extract the day number from a filename like '01.py' or '01-alternative.py'."""
+    match = re.match(r"(\d\d)", day_name)
+    return match.group(1) if match else day_name
+
+
+def select_best_per_day(results: list[DayResult]) -> tuple[list[DayResult], float, float, float]:
+    """Mark the best (fastest) solution for each day as in_total, others as not.
+
+    Returns updated results and the totals based only on best solutions.
+    """
+    day_groups: dict[str, list[DayResult]] = {}
+    for r in results:
+        day_num = get_day_number(r.day)
+        if day_num not in day_groups:
+            day_groups[day_num] = []
+        day_groups[day_num].append(r)
+
+    total_time = 0.0
+    total_part_1 = 0.0
+    total_part_2 = 0.0
+
+    for group in day_groups.values():
+        completed = [r for r in group if r.total_time > 0]
+        if completed:
+            best = min(completed, key=lambda r: r.total_time)
+            for r in group:
+                r.in_total = r is best
+            total_time += best.total_time
+            total_part_1 += best.part1_time
+            total_part_2 += best.part2_time
+        else:
+            for r in group:
+                r.in_total = False
+
+    return results, total_time, total_part_1, total_part_2
 
 
 def benchmark(path: Path) -> None:
@@ -433,9 +488,7 @@ def benchmark(path: Path) -> None:
             result = run_day(filepath)
             results.append(result)
 
-            total_part_1 += result.part1_time
-            total_part_2 += result.part2_time
-            total_time += result.total_time
+            _, total_time, total_part_1, total_part_2 = select_best_per_day(results)
 
             live.update(
                 build_console_table(

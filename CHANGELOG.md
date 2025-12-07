@@ -34,6 +34,10 @@ Legend:
  * 🔴 > 1s
  * ⚪ Not included in total
 
+## Fixed
+
+* Fix benchmark help text (by @baloncek2662)
+
 ## [25.9]
 
 ### Added

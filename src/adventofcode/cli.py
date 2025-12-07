@@ -678,11 +678,12 @@ def main() -> None:
         epilog=dedent("""\
             Examples:
                 adventofcode benchmark                  # Run benchmarks in current directory
-                adventofcode benchmark -d ./2024        # Run benchmarks in the ./2024 directory
-                adventofcode benchmark -d ./2024 2      # Run benchmarks in the ./2024 directory for day 2 only
+                adventofcode benchmark ./2024           # Run benchmarks in the ./2024 directory
+                adventofcode benchmark 02.py            # Run benchmarks for day 2 only
+                adventofcode benchmark ./2024/02.py     # Run benchmarks in the ./2024 directory for day 2 only
 
             The benchmark will:
-            1. Find all day files (01.py, 02.py, etc.)
+            1. Find selected day files (01.py, 02.py, etc.)
             2. Run each day script (python 01.py, etc.)
             3. Parse execution times from the output
             4. Display a live-updating table in the console

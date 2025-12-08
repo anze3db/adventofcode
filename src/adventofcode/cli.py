@@ -158,12 +158,23 @@ def split_day_name(day_name: str) -> tuple[str, str]:
         '01' -> ('01', '')
         '01-alt' -> ('01', 'alt')
         '03-numpy' -> ('03', 'numpy')
+        '03_numpy' -> ('03', 'numpy')
+        'numpy03' -> ('03', 'numpy')
+        'fast03numpy' -> ('03', 'fast-numpy')
     """
-    match = re.match(r"(\d\d)(?:-(.+))?", day_name)
+    match = re.search(r"(\d\d)", day_name)
     if match:
         day_num = match.group(1)
-        variant = match.group(2) or ""
+        # Extract parts before and after the day number
+        before = day_name[: match.start()].rstrip("-_")
+        after = day_name[match.end() :].lstrip("-_")
+        # Combine before and after parts with a hyphen if both exist
+        if before and after:
+            variant = f"{before}-{after}"
+        else:
+            variant = before or after
         return day_num, variant
+
     return day_name, ""
 
 

@@ -613,10 +613,11 @@ def run(filepath: Path, benchmark: bool = False) -> None:  # noqa: FBT001, FBT00
     match = re.match(r"(\d\d)", filepath.stem)
     if not match:
         return
+    day = int(match.group(1))
     aoc = AoC(
         part_1=module.part1,
         part_2=module.part2,
-        day=int(match.group(1)),
+        day=day,
         year=AOC_YEAR,
     )
     if hasattr(module, "part1_asserts"):
@@ -629,6 +630,9 @@ def run(filepath: Path, benchmark: bool = False) -> None:  # noqa: FBT001, FBT00
         aoc.submit_p1_benchmark()
     else:
         aoc.submit_p1()
+    if (AOC_YEAR < 2025 and day == 25) or (AOC_YEAR >= 2025 and day == 12):
+        console.log("[green]No part 2 for Day 25 ⭐[/green]\n")
+        return
     if hasattr(module, "part2_asserts"):
         for test_input, expected in module.part2_asserts:
             aoc.assert_p2(test_input, expected)

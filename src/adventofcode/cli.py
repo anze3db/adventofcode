@@ -1,5 +1,5 @@
 import argparse
-import datetime
+import datetime as dt
 import importlib.util
 import os
 import re
@@ -20,8 +20,8 @@ from adventofcode.utils import PART_1_RETURN_STR, PART_2_RETURN_STR, format_time
 
 load_dotenv(Path(".env").absolute().as_posix())
 
-est = datetime.timezone(datetime.timedelta(hours=-5))
-today_est = datetime.datetime.now(tz=est).date()
+est = dt.timezone(dt.timedelta(hours=-5))
+today_est = dt.datetime.now(tz=est).date()
 
 AOC_YEAR = int(os.getenv("AOC_YEAR", str(today_est.year)))
 
@@ -182,7 +182,7 @@ def run_day(filepath: Path) -> DayResult:
     match = re.match(r"(\d\d)", filepath.stem)
     day_num = int(match.group(1)) if match else 0
     day_num_str, variant = split_day_name(filepath.stem)
-    if datetime.date(AOC_YEAR, 12, day_num) > today_est:
+    if dt.date(AOC_YEAR, 12, day_num) > today_est:
         return DayResult(day=filepath.stem, day_num=day_num_str, variant=variant, status="🕑")
 
     result = DayResult(day=filepath.stem, day_num=day_num_str, variant=variant)

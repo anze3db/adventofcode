@@ -1,4 +1,4 @@
-import datetime
+import datetime as dt
 import os
 import re
 import sys
@@ -25,8 +25,8 @@ AOC_URL = "https://adventofcode.com"
 
 
 AOC_SESSION = os.getenv("AOC_SESSION")
-est = datetime.timezone(datetime.timedelta(hours=-5))
-today_est = datetime.datetime.now(tz=est).date()
+est = dt.timezone(dt.timedelta(hours=-5))
+today_est = dt.datetime.now(tz=est).date()
 
 AOC_YEAR = int(os.getenv("AOC_YEAR", str(today_est.year)))
 

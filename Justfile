@@ -1,0 +1,80 @@
+# adventofcode's development tasks: `just` lists them. Everything runs through uv.
+
+set shell := ["bash", "-euo", "pipefail", "-c"]
+set positional-arguments
+
+paths := "src tests scripts"
+
+# List the recipes
+[private]
+default:
+    @just --list --unsorted
+
+# Install Python and the dev dependencies
+sync:
+    uv sync
+
+# Run the tests; arguments go to pytest (`just test tests/test_adventofcode.py -x`)
+[group("test")]
+test *args:
+    uv run pytest "$@"
+
+# Run the tests on another Python (`just test-on 3.11`)
+[group("test")]
+test-on python *args:
+    uv run --isolated --python "{{ python }}" pytest "${@:2}"
+
+# Run the tests on every Python CI tests
+[group("test")]
+test-all:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    for py in 3.11 3.12 3.13 3.14 3.15; do
+        echo "── Python $py"
+        just test-on "$py" -q
+    done
+
+# Lint and format check, as CI does
+[group("check")]
+lint:
+    uv run ruff check {{ paths }}
+    uv run ruff format --check {{ paths }}
+
+# Format the code and apply ruff's safe fixes
+[group("check")]
+fmt:
+    uv run ruff format {{ paths }}
+    uv run ruff check --fix {{ paths }}
+
+# Audit the GitHub workflows (zizmor, actionlint)
+[group("check")]
+lint-actions:
+    uvx zizmor .github/workflows
+    uvx --from actionlint-py actionlint
+
+# Everything before a push: lint, then the tests
+[group("check")]
+check: lint test
+
+# Preview the next release; `just release --no-dry-run` commits it (`--push`: push and wait for it)
+[group("release")]
+release *args:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    commit=false
+    rest=()
+    for arg in "$@"; do
+        if [[ $arg == --no-dry-run ]]; then commit=true; else rest+=("$arg"); fi
+    done
+    if $commit; then
+        uv run scripts/release.py prepare ${rest[@]+"${rest[@]}"}
+    else
+        uv run scripts/release.py prepare --dry-run ${rest[@]+"${rest[@]}"}
+        echo
+        echo "That was a dry run. To commit the release: just release --no-dry-run"
+        echo "Add --push to push it too and wait until CI passes and it's published."
+    fi
+
+# Remove build, coverage and cache output
+clean:
+    rm -rf dist htmlcov .coverage .coverage.* .pytest_cache .ruff_cache

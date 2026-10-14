@@ -1,13 +1,10 @@
-[build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
-
 [project]
 name = "adventofcode"
-dynamic = ["version"]
+# CalVer: YY.N = the Nth release of 20YY (26.1, 26.2, ..., 27.1). Bumped by scripts/release.py.
+version = "25.12"
 description = 'Helper utilities for solving Advent of Code puzzles'
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 license = "MIT"
 keywords = []
 authors = [
@@ -16,7 +13,6 @@ authors = [
 classifiers = [
   "Development Status :: 4 - Beta",
   "Programming Language :: Python",
-  "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
@@ -37,6 +33,7 @@ dependencies = [
 Documentation = "https://github.com/anze3db/adventofcode#readme"
 Issues = "https://github.com/anze3db/adventofcode/issues"
 Source = "https://github.com/anze3db/adventofcode"
+Changelog = "https://github.com/anze3db/adventofcode/blob/main/CHANGELOG.md"
 Mastodon = "https://fosstodon.org/@anze3db"
 Twitter = "https://twitter.com/anze3db"
 
@@ -44,53 +41,22 @@ Twitter = "https://twitter.com/anze3db"
 adventofcode = "adventofcode.cli:main"
 aoc = "adventofcode.cli:main"
 
-[tool.hatch.version]
-path = "src/adventofcode/__about__.py"
-
-[tool.hatch.envs.default]
-dependencies = [
-  "coverage[toml]>=6.5",
-  "pytest",
-  "flakytest"
-]
-[tool.hatch.envs.default.scripts]
-test = "pytest {args:tests}"
-test-cov = "coverage run -m pytest {args:tests}"
-cov-report = [
-  "- coverage combine",
-  "coverage report",
-]
-cov = [
-  "test-cov",
-  "cov-report",
-]
-
-[[tool.hatch.envs.all.matrix]]
-python = ["3.10", "3.11", "3.12", "3.13", "3.14", "3.15"]
-
-[tool.hatch.envs.lint]
-detached = true
-dependencies = [
+[dependency-groups]
+dev = [
+  "flakytest",
+  "pytest>=8",
   "ruff>=0.17.0",
 ]
-[tool.hatch.envs.lint.scripts]
-typing = "mypy --install-types --non-interactive {args:src/adventofcode tests}"
-style = [
-  "ruff check {args:.}",
-  "ruff format --check {args:.}",
-]
-fmt = [
-  "ruff format {args:.}",
-  "ruff check --fix {args:.}",
-  "style",
-]
-all = [
-  "style",
-  "typing",
-]
+
+[build-system]
+requires = ["uv_build>=0.8.0,<0.14.0"]
+build-backend = "uv_build"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
 
 [tool.ruff]
-target-version = "py310"
+target-version = "py311"
 line-length = 120
 
 [tool.ruff.lint]
@@ -146,22 +112,6 @@ ban-relative-imports = "all"
 [tool.ruff.lint.per-file-ignores]
 # Tests can use magic values, assertions, and relative imports
 "tests/**/*" = ["PLR2004", "S101", "TID252"]
-
-[tool.coverage.run]
-source_pkgs = ["adventofcode", "tests"]
-branch = true
-parallel = true
-omit = [
-  "src/adventofcode/__about__.py",
-]
-
-[tool.coverage.paths]
-adventofcode = ["src/adventofcode", "*/adventofcode/src/adventofcode"]
-tests = ["tests", "*/adventofcode/tests"]
-
-[tool.coverage.report]
-exclude_lines = [
-  "no cov",
-  "if __name__ == .__main__.:",
-  "if TYPE_CHECKING:",
-]
+# The release script is shared with django-tui, potatoq and flakytest-python: keep it in sync rather than lint-clean
+"scripts/release.py" = ["DTZ011", "EM101", "EM102", "FBT001", "FBT002", "PLR0917", "PLW2901", "S603", "T201"]
+"tests/test_release_script.py" = ["ARG001", "ARG005", "PLC0415", "S603", "S607"]

@@ -1,11 +1,10 @@
 import pytest
 
-from src.adventofcode.cli import split_day_name
+from adventofcode.__about__ import __version__
+from adventofcode.cli import split_day_name
 
 
 def test_version():
-    from src.adventofcode.__about__ import __version__  # noqa: PLC0415
-
     assert __version__
 
 

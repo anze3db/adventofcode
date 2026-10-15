@@ -1,5 +1,5 @@
 version = 1
-revision = 3
+revision = 5
 requires-python = ">=3.11"
 resolution-markers = [
     "python_full_version >= '3.11.5'",
@@ -8,7 +8,7 @@ resolution-markers = [
 
 [[package]]
 name = "adventofcode"
-version = "25.12"
+version = "26.1"
 source = { editable = "." }
 dependencies = [
     { name = "beautifulsoup4" },

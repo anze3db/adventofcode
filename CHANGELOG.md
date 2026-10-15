@@ -11,7 +11,26 @@ prepared (see [RELEASING.md](https://github.com/anze3db/adventofcode/blob/main/R
 
 ## Unreleased
 
+## [26.1](https://github.com/anze3db/adventofcode/releases/tag/26.1) - 2026-10-15
+
+### Highlights
+
 - Python 3.11 to 3.15 are supported. Dropped Python 3.10, which is end of life.
+
+<!-- Release notes generated using configuration in .github/release.yml at main -->
+
+### What's Changed
+#### Other changes
+* [pre-commit.ci] pre-commit autoupdate by @pre-commit-ci[bot] in https://github.com/anze3db/adventofcode/pull/68
+* [pre-commit.ci] pre-commit autoupdate by @pre-commit-ci[bot] in https://github.com/anze3db/adventofcode/pull/69
+* [pre-commit.ci] pre-commit autoupdate by @pre-commit-ci[bot] in https://github.com/anze3db/adventofcode/pull/70
+
+
+**Full Changelog**: https://github.com/anze3db/adventofcode/compare/25.12...26.1
+
+### Contributors
+
+Thank you to everyone who contributed to this release: @anze3db
 
 ## [25.12]
 

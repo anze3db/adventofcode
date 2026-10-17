@@ -2,3 +2,6 @@ dist
 .cache.db
 .venv
 __pycache__
+
+# percache store of puzzle inputs (src/adventofcode/__init__.py)
+.cache
